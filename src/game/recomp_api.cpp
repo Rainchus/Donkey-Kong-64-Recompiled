@@ -377,3 +377,27 @@ extern "C" void osViGetCurrentMode_recomp(uint8_t* rdram, recomp_context* ctx) {
 
     ctx->r2 = MEM_BU(0x3, modep);
 }
+
+extern "C" void dk64_apply_gameplay_widescreen(uint8_t* rdram, recomp_context* ctx) {
+    (void)rdram;
+    (void)ctx;
+
+    // constexpr gpr scissor_min_x_addr = 0xFFFFFFFF80744498ull;
+    constexpr gpr scissor_max_x_addr = 0xFFFFFFFF807444A0ull;
+    constexpr gpr screen_height_addr = 0xFFFFFFFF80744494ull;
+    const int32_t current_height = (int32_t)MEM_H(0, screen_height_addr);
+    const float original_aspect = 4.0f / 3.0f;
+
+    int window_width = 0;
+    int window_height = 0;
+    recompui::get_window_size(window_width, window_height);
+
+    ultramodern::renderer::GraphicsConfig graphics_config = ultramodern::renderer::get_graphics_config();
+    float target_aspect = original_aspect;
+    if (graphics_config.ar_option == ultramodern::renderer::AspectRatio::Expand) {
+        const float window_aspect = static_cast<float>(window_width) / static_cast<float>(window_height);
+        target_aspect = std::max(window_aspect, original_aspect);
+    }
+    int32_t target_width = (int32_t)std::lroundf(static_cast<float>(current_height) * target_aspect);
+    MEM_H(0, scissor_max_x_addr) = (int16_t)(target_width - 1);
+}

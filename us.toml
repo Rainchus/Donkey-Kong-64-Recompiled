@@ -45,6 +45,12 @@ text = """osAiGetLength_recomp(rdram, ctx);
 	ctx->r3 = ctx->r2;"""
 before_vram = 0x80601F08
 
+[[patches.hook]]
+func = "func_global_asm_805FB944"
+text = """extern void dk64_apply_gameplay_widescreen(uint8_t* rdram, recomp_context* ctx);
+dk64_apply_gameplay_widescreen(rdram, ctx);"""
+before_vram = 0x805FBC54
+
 [[patches.instruction]]
 func = "func_global_asm_80601EE4"
 vram = 0x80601F0C
