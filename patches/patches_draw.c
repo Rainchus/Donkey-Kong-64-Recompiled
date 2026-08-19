@@ -1,22 +1,61 @@
 #include "common_structs.h"
 #include "ui.h"
 
-s32 getDrawDistanceFloor(void) {
-    f32 fl = recomp_get_draw_distance();
-    recomp_printf("DD: %.2f\n", fl);
-    return fl;
+f32 draw_distance_ratio = 1.0f;
+
+extern u8 cc_player_index;
+extern f32 func_global_asm_8065CFB8(s16 arg0, f32 arg1);
+extern f32 func_global_asm_8065D0FC(f32 arg0);
+extern Maps current_map;
+
+RECOMP_PATCH void func_global_asm_8065CE4C(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, s16 *arg5) {
+    f32 dy;
+    f32 distance; // phi_f14
+    f32 new_var2;
+    f32 dx;
+    f32 dz;
+
+    new_var2 = arg2 - character_change_array[cc_player_index].unk224;
+    dx = arg0 - character_change_array[cc_player_index].unk21C;
+    dy = arg1 - character_change_array[cc_player_index].unk220;
+
+    dz = new_var2;
+    distance = _sqrtf((SQ(dx) + SQ(dy)) + SQ(dz));
+    if (current_map == MAP_AZTEC) {
+        arg3 = func_global_asm_8065CFB8(arg4, arg3);
+        if (arg3 < distance) {
+            *arg5 = 0;
+            return;
+        }
+    }
+    dy = func_global_asm_8065D0FC(arg3);
+    dx = dy * 0.75f;
+    dx *= draw_distance_ratio;
+    if (distance < dx) {
+        *arg5 = 0xFF;
+        return;
+    }
+
+    *arg5 = ((distance - dx) / (dy - dx)) * 255.0f;
+    if (*arg5 >= 0x100) {
+        *arg5 = 0xFF;
+    }
+    *arg5 = 0xFF - *arg5;
 }
 
-f32 recomp_filter_draw(f32 value) {
-    f32 fl = getDrawDistanceFloor();
+#define ACTOR_RATIO 0.0f
+f32 recomp_filter_draw(f32 value, f32 ratio) {
+    f32 fl = recomp_get_draw_distance();
+    fl *= ratio;
     if (value < fl) {
         return fl;
     }
     return value;
 }
 
-f32 recomp_filter_draw_sq(f32 value) {
-    s32 fl = getDrawDistanceFloor();
+f32 recomp_filter_draw_sq(f32 value, f32 ratio) {
+    f32 fl = recomp_get_draw_distance();
+    fl *= ratio;
     if (value < SQ(fl)) {
         return SQ(fl);
     }
@@ -26,13 +65,10 @@ f32 recomp_filter_draw_sq(f32 value) {
 Gfx* func_global_asm_80614B34(Gfx*, Actor*);
 s32 func_global_asm_80658E8C(f32, f32, f32, u8, s32);
 void* func_global_asm_80722294(void*, Actor*, u8);
-extern f32 func_global_asm_8065D0FC(f32 arg0);
 void func_global_asm_80614A64(Actor *arg0);
 u8 getBonePosition(Actor *actor, s32 boneIndex, f32 *x, f32 *y, f32 *z);
 void func_global_asm_8065C334(f32 arg0, f32 arg1, f32 arg2, s16 arg3, u8 *arg4, u8 *arg5, u8 *arg6, s16 arg7);
-void func_global_asm_8065CE4C(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, s16 *arg5);
 Gfx *func_global_asm_8065D008(Gfx *dl, s16 arg1, u8 arg2);
-extern u8 cc_player_index;
 extern u8 cc_number_of_players;
 extern u8  D_global_asm_807444FC;
 RECOMP_PATCH Gfx* func_global_asm_80630DCC(s32 arg0, Actor* arg1, Gfx* dl, s32 arg3) {
@@ -81,7 +117,7 @@ RECOMP_PATCH Gfx* func_global_asm_80630DCC(s32 arg0, Actor* arg1, Gfx* dl, s32 a
                     SQ(character_change_array[cc_player_index].unk220 - arg1->y_position) +
                     SQ(character_change_array[cc_player_index].unk224 - arg1->z_position)
                 );
-                if (func_global_asm_8065D0FC(recomp_filter_draw(arg1->draw_distance)) < sp64) {
+                if (func_global_asm_8065D0FC(recomp_filter_draw(arg1->draw_distance, ACTOR_RATIO)) < sp64) {
                     return dl;
                 }
                 if (func_global_asm_80658E8C(arg1->x_position, arg1->y_position, arg1->z_position, arg1->unk130, arg1->unk131)) {
@@ -131,7 +167,7 @@ RECOMP_PATCH Gfx* func_global_asm_80630DCC(s32 arg0, Actor* arg1, Gfx* dl, s32 a
         gDPSetPrimColor(dl++, 0, 0xFF, spCB, spCA, spC9, 0xFF);
     }
     if (arg1->object_properties_bitfield & 0x8000) {
-        func_global_asm_8065CE4C(arg1->position.f[0], arg1->position.f[1], arg1->position.f[2], recomp_filter_draw(arg1->draw_distance), -1, &arg1->shadow_opacity);
+        func_global_asm_8065CE4C(arg1->position.f[0], arg1->position.f[1], arg1->position.f[2], recomp_filter_draw(arg1->draw_distance, ACTOR_RATIO), -1, &arg1->shadow_opacity);
     }
     if ((arg1->interactable != 0x80) && (arg1->interactable != 0x40) && (arg1->interactable != 8)) {
         if ((arg1->position.f[1] - 5.0f) < character_change_array[cc_player_index].unk220) {
@@ -203,7 +239,7 @@ RECOMP_PATCH Chunk14 *func_global_asm_806303C4(Chunk14 *arg0, u8 arg1, PropModel
 
     phi_v0 = FALSE;
     phi_v1 = NULL;
-    arg6 = recomp_filter_draw(arg6);
+    arg6 = recomp_filter_draw(arg6, 1.0f);
     if (argA == 1) {
         arg0 = D_global_asm_807F5FF0;
     }
@@ -276,30 +312,30 @@ f32 func_global_asm_80689DD4(f32 x, f32 y, f32 z);
 
 RECOMP_PATCH u8 func_global_asm_80689F80(ActorSpawner *spawner) {
     return func_global_asm_80652E58(spawner->unk4A)
-        && func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54);
+        && func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54, ACTOR_RATIO);
 }
 
 RECOMP_PATCH u8 func_global_asm_80689FEC(ActorSpawner *spawner) {
     return (!func_global_asm_80652E58(spawner->tied_actor->unk12C)
-        || !(func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54)))
+        || !(func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54, ACTOR_RATIO)))
     && spawner->tied_actor->unk114 == NULL;
 }
 
 RECOMP_PATCH u8 func_global_asm_8068A074(ActorSpawner *spawner) {
     return (!func_global_asm_80652E58(spawner->tied_actor->unk12C)
-        || !(func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54)))
+        || !(func_global_asm_80689DD4(spawner->unk10, spawner->unk14, spawner->unk18) < recomp_filter_draw_sq(spawner->unk54, ACTOR_RATIO)))
         && (spawner->tied_actor->unk114 == NULL
         && spawner->tied_actor->control_state == 0);
 }
 
 RECOMP_PATCH u8 func_global_asm_8068A118(ActorSpawner *arg0) {
     // TODO: idk why this temporary variable is needed but... yeah
-    u8 temp = func_global_asm_80689DD4(arg0->unk10, arg0->unk14, arg0->unk18) < recomp_filter_draw_sq(arg0->unk54);
+    u8 temp = func_global_asm_80689DD4(arg0->unk10, arg0->unk14, arg0->unk18) < recomp_filter_draw_sq(arg0->unk54, ACTOR_RATIO);
     return temp;
 }
 
 RECOMP_PATCH u8 func_global_asm_8068A164(ActorSpawner *spawner) {
-    return !(func_global_asm_80689DD4(spawner->tied_actor->x_position, spawner->tied_actor->y_position, spawner->tied_actor->z_position) < recomp_filter_draw_sq(spawner->unk54));
+    return !(func_global_asm_80689DD4(spawner->tied_actor->x_position, spawner->tied_actor->y_position, spawner->tied_actor->z_position) < recomp_filter_draw_sq(spawner->unk54, ACTOR_RATIO));
 }
 
 typedef struct Struct807FDC90 Struct807FDC90;
@@ -370,7 +406,6 @@ extern Struct807FDC90 *D_global_asm_807FDC90;
 extern s32 D_global_asm_807FBB64;
 extern Actor *gLastSpawnedActor;
 extern Actor *gCurrentActorPointer;
-extern Maps current_map;
 
 RECOMP_PATCH void func_global_asm_80727958(void) {
     Actor *temp_a0;
@@ -414,7 +449,7 @@ RECOMP_PATCH void func_global_asm_80727958(void) {
         if ((var_s1 == 0) || (var_s0->properties_bitfield & 4) || (D_global_asm_807FBB64 & 0x100)) {
             var_s1 = 0x7FFFFFFF;
         } else if (var_s0->alternative_enemy_spawn != 0x44) { // Not a fairy
-            var_s1 = recomp_filter_draw_sq(var_s1);
+            var_s1 = recomp_filter_draw_sq(var_s1, ACTOR_RATIO);
         }
         if ((temp_a1 != 0) && var_s0->tied_actor->control_state == 0x3B) {
             func_global_asm_8061CFCC(var_s0->tied_actor);

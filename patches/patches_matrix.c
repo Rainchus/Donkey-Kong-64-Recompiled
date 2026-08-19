@@ -176,7 +176,7 @@ typedef struct Struct80636FFC {
     u8 unkC5;
 } Struct80636FFC;
 
-extern f32 recomp_filter_draw(f32 value);
+extern f32 recomp_filter_draw(f32 value, f32 ratio);
 
 // @recomp: Model 2 Matrix stuff
 RECOMP_PATCH Gfx* func_global_asm_80636FFC(Struct80636FFC* arg0, Gfx* dl, s32 arg2, s32 arg3, s32 arg4, u8 arg5, s16 arg6) {
@@ -209,16 +209,16 @@ RECOMP_PATCH Gfx* func_global_asm_80636FFC(Struct80636FFC* arg0, Gfx* dl, s32 ar
         dY = character_change_array[cc_player_index].unk220 - arg0->unk4;
         dZ = character_change_array[cc_player_index].unk224 - arg0->unk8;
         sp88 = _sqrtf(dX + SQ(dY) + SQ(dZ));
-        var_f2 = func_global_asm_8065D0FC(recomp_filter_draw(arg0->unkC0));
+        var_f2 = func_global_asm_8065D0FC(recomp_filter_draw(arg0->unkC0, 1.0f));
         if (arg0->unkC5 & 1) {
-            var_f2 = recomp_filter_draw(arg0->unkC0);
+            var_f2 = recomp_filter_draw(arg0->unkC0, 1.0f);
         }
         if (var_f2 < sp88) {
             return dl;
         }
     }
     if (arg0->unkC3 != 0) {
-        func_global_asm_8065EB10(arg0->unkC3, arg0->unkB6, arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unkC0), sp88 / var_f2, (s32) arg6);
+        func_global_asm_8065EB10(arg0->unkC3, arg0->unkB6, arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unkC0, 1.0f), sp88 / var_f2, (s32) arg6);
     }
     if ((arg0->unkB4 == 0) || (arg0->unkB4 == 0x241)) {
         return dl;
@@ -287,7 +287,7 @@ RECOMP_PATCH Gfx* func_global_asm_80636FFC(Struct80636FFC* arg0, Gfx* dl, s32 ar
             func_global_asm_8063E6B4(temp_a0_4);
             sp92 = D_global_asm_807F6000[temp_v0_3].unk7C->unk64;
         } else {
-            func_global_asm_8065CE4C(arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unkC0), (s16) (s32) arg0->unkB4, &sp92);
+            func_global_asm_8065CE4C(arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unkC0, 1.0f), (s16) (s32) arg0->unkB4, &sp92);
             if (arg0->unkB6 != -1) {
                 if ((D_global_asm_807F6000[temp_v0_3].unk7C != NULL) && (D_global_asm_80750AB4 == 1)) {
                     D_global_asm_807F6000[temp_v0_3].unk7C->unk62 = sp92;
@@ -658,14 +658,14 @@ RECOMP_PATCH Gfx *func_global_asm_80637B6C(Struct80635468_arg1 *arg0, Gfx *dl, f
     if (arg5 != 0) {
         sp1D0 = _sqrtf(SQ(arg2 - arg0->unk0) + SQ(arg3 - arg0->unk4) + SQ(arg4 - arg0->unk8));
         // get max distance
-        sp1BE = func_global_asm_8065D0FC(recomp_filter_draw(arg0->unk58));
+        sp1BE = func_global_asm_8065D0FC(recomp_filter_draw(arg0->unk58, 1.0f));
         if (sp1BE < sp1D0) {
             // cull if too far away
             return dl;
         }
     }
     if (arg0->unk5B != 0) {
-        func_global_asm_8065EB10(arg0->unk5B, arg0->unk4C, arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unk58), sp1D0 / sp1BE, arg6);
+        func_global_asm_8065EB10(arg0->unk5B, arg0->unk4C, arg0->unk0, arg0->unk4, arg0->unk8, recomp_filter_draw(arg0->unk58, 1.0f), sp1D0 / sp1BE, arg6);
     }
     if (arg5) {
         if (func_global_asm_80658E8C(arg0->unk0, arg0->unk4, arg0->unk8, 0, 0) != 0) {

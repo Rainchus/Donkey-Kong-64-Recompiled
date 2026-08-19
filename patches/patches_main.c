@@ -203,9 +203,9 @@ extern s32 D_global_asm_8076A088;
 RECOMP_PATCH void func_global_asm_805FE544(u8 arg0) {
     s32 temp;
     s32 stored_temp;
-    // @recomp: Double the DL Allocation
+    // @recomp: Quadruple the DL Allocation
     if (D_global_asm_807FBB64 & 1) {
-        temp = 12000;
+        temp = 24000;
         stored_temp = temp;
         recomp_adjust_dl_allocation(&temp);
         if (stored_temp > temp) {
@@ -214,7 +214,7 @@ RECOMP_PATCH void func_global_asm_805FE544(u8 arg0) {
         }
         D_global_asm_8076A058 = temp;
     } else {
-        temp = 6000;
+        temp = 12000;
         stored_temp = temp;
         recomp_adjust_dl_allocation(&temp);
         if (stored_temp > temp) {
@@ -866,6 +866,7 @@ RECOMP_PATCH Gfx *func_global_asm_80701CA0(Gfx *dl) {
     return dl;
 }
 
+extern f32 draw_distance_ratio;
 //@recomp: Sandstorm screen overlay
 RECOMP_PATCH Gfx* func_global_asm_8068D264(Gfx* dl, f32* cooldown_timer) {
     void* temp_v0;
@@ -891,8 +892,10 @@ RECOMP_PATCH Gfx* func_global_asm_8068D264(Gfx* dl, f32* cooldown_timer) {
     gDPSetCombineMode(dl++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
     if (current_map == MAP_AZTEC) {
         gDPSetPrimColor(dl++, 0, 0, 0x8A, 0x52, 0x16, 200.0f * cooldown);
+        draw_distance_ratio = 1.0f - ((200.0f * cooldown) / 255.0f);
     } else {
         gDPSetPrimColor(dl++, 0, 0, 0xFF, 0xFF, 0xFF, 35.0f * cooldown);
+        draw_distance_ratio = 1.0f - ((35.0f * cooldown) / 255.0f);
     }
     gDPLoadTextureBlock(dl++, OS_PHYSICAL_TO_K0(temp_v0), G_IM_FMT_IA, G_IM_SIZ_8b, 64, 64, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 6, 6, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(
