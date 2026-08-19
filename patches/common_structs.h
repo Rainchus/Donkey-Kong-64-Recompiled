@@ -1276,8 +1276,7 @@ struct actor {
         u16 unk146; // used (0x147 hand state? 0x146 seems to be u16)
         s16 unk146_s16; // used func_global_asm_8068A764
     };
-    void* unk148; // Used
-    void* unk14C; // Used
+    void* unk148[2]; // Used
     FloorTriangle* unk150;
     u8 control_state; // at 0x154
     u8 control_state_progress; // at 0x155
@@ -1978,3 +1977,146 @@ struct Struct80717D84 {
     Struct80717D84 *unk398;
     Struct80717D84 *unk39C;
 };
+
+typedef struct ActorSpawner ActorSpawner;
+
+struct ActorSpawner {
+    s16 actor_type; // At 0x0
+    u16 unk2;
+    f32 x_position; // At 0x4
+    f32 y_position; // At 0x8
+    f32 z_position; // At 0xC
+    f32 unk10;
+    f32 unk14;
+    f32 unk18;
+    s16 y_rotation; // At 0x1C
+    u16 unk1E;
+    f32 unk20; // At 0x20, Used
+    u8 pad24[0x32 - 0x24];
+    s16 unk32;
+    u8 pad34[0x44 - 0x34];
+    Actor* tied_actor; // At 0x44
+    u8 unk48; // Used
+    u8 unk49;
+    s16 unk4A;
+    u8 unk4C; // Used
+    u8 unk4D;
+    Actor *unk50;
+    f32 unk54;
+    s16 unk58;
+    s16 id; // At 0x5A
+    s32 (*unk5C)(s32); // At 0x5C
+    s32 (*drawing_code)(s32); // At 0x60
+    ActorSpawner* previous_spawner; // At 0x64
+    ActorSpawner* next_spawner; // At 0x68
+    u8 pad6C[0x80 - 0x6C];
+};
+
+typedef struct {
+    u16 unk0;
+    u16 unk2;
+    s32 unk4;
+    s32 unk8;
+    s16 unkC;
+    u8 unkE;
+    u8 unkF;
+    s32 unk10;
+    u8 unk14;
+    u8 unk15;
+    u8 unk16;
+    u8 unk17;
+} Struct8075EB80;
+
+extern Struct8075EB80 D_global_asm_8075EB80[];
+
+// TODO: Use that clever tuple thing from BKomp
+typedef struct {
+    s16 coords_0[3]; // 0x0
+    s16 coords_1[3]; // 0x6
+    s16 coords_2[3]; // 0xC
+    s16 coords_3[3]; // 0x12
+    s16 coords_4[3]; // 0x18
+} EnemyAggressionBox;
+
+typedef struct EnemyMovementBox EnemyMovementBox;
+
+struct EnemyMovementBox {
+    s16 x_pos_0; // 0x0
+    s16 z_pos_0; // 0x2
+    s16 x_pos_1; // 0x4
+    s16 z_pos_1; // 0x6
+    u8 pad[4];
+    EnemyAggressionBox *aggression_box_pointer; // = 0xC, -- u32
+    u8 pad10[0xC];
+    Actor *unk1C;
+};
+
+typedef struct SpawnerFileData {
+    u8 enemy_value; // 0x0
+    u8 unk1;
+	u16 y_rot; // 0x2
+	s16 x_pos; // 0x4
+	s16 y_pos; // 0x6
+	s16 z_pos; // 0x8
+	u8 cs_model; // 0xA
+    u8 unkB;
+	u8 max_idle_speed; // 0xC
+	u8 max_aggro_speed; // 0xD
+    u8 unkE;
+	u8 scale; // 0xF
+	u8 aggro; // 0x10
+    u8 unk11;
+	u8 something_spawn_state; // 0x12
+	u8 spawn_trigger; // 0x13
+	u8 respawn_timer_init; // 0x14 - Result is multiplied by 30 to get actual respawn timer
+	u8 unk15;
+} SpawnerFileData;
+
+typedef struct SpawnerData_unk20 {
+    u8 unk0;
+    u8 unk1;
+} SpawnerData_unk20;
+
+typedef struct {
+	SpawnerFileData init;
+    u8 unk16;
+    u8 unk17;
+    Actor *tied_actor; // 0x18
+	EnemyMovementBox *movement_box_pointer; // 0x1C
+	SpawnerData_unk20 *unk20; // 0x20
+	s16 respawn_time; // 0x24
+    s16 unk26;
+    s32 unk28;
+	f32 unk2C; // 0x2C initially written to 0.01
+	f32 unk30; // 0x30 initially written to 1
+	f32 animation_speed; // 0x34
+	u32 unk38; // 0x38 TODO: maybe float, based on alt enemy type
+	u32 unk3C;
+    s16 chunk; // 0x40
+	u8 spawn_state; // 0x42
+	u8 counter; // 0x43
+	u8 alternative_enemy_spawn; // 0x44
+
+	// 1000 0000 0000 0000 - ?
+	// 0100 0000 0000 0000 - ? Resets on Respawn
+	// 0010 0000 0000 0000 - ? Resets on Respawn
+	// 0001 0000 0000 0000 - ?
+
+	// 0000 1000 0000 0000 - ?
+	// 0000 0100 0000 0000 - ?
+	// 0000 0010 0000 0000 - ?
+	// 0000 0001 0000 0000 - ?
+
+	// 0000 0000 1000 0000 - ?
+	// 0000 0000 0100 0000 - Ignores instrument plays
+	// 0000 0000 0010 0000 - Ignores movement boundaries
+	// 0000 0000 0001 0000 - ?
+
+	// 0000 0000 0000 1000 - ? Reset on respawn
+	// 0000 0000 0000 0100 - ?
+	// 0000 0000 0000 0010 - Won't Respawn
+	// 0000 0000 0000 0001 - Spawned from respawn pending
+
+    // TODO: proper bitfield syntax
+	u16 properties_bitfield; // = 0x46 bitfield -- TODO: Document this, find where this comes from so we can display stuff pre-load
+} EnemySpawner; // 807FDC8C pointer to array of structs, count at 807FDC88

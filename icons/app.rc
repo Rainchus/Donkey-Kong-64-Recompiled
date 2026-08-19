@@ -1,3 +1,5 @@
 1 ICON "256.ico"
 2 ICON "128.ico"
-2 ICON "64.ico"
+3 ICON "64.ico"
+4 ICON "32.ico"
+5 ICON "16.ico"

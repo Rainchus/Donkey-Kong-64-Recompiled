@@ -39,6 +39,7 @@
 #include "recompinput/profiles.h"
 #include "donk_config.h"
 #include "donk_sound.h"
+#include "donk_draw.h"
 #include "banjo_support.h"
 #include "banjo_game.h"
 #include "donk_launcher.h"
@@ -786,6 +787,7 @@ int main(int argc, char** argv) {
     REGISTER_FUNC(recomp_get_right_analog_inputs);
     REGISTER_FUNC(recomp_get_bgm_volume);
     REGISTER_FUNC(recomp_get_sfx_volume);
+    REGISTER_FUNC(recomp_get_draw_distance);
     REGISTER_FUNC(recomp_get_story_skip);
     REGISTER_FUNC(recomp_get_camera_type);
     REGISTER_FUNC(recomp_get_lightning_intensity);
