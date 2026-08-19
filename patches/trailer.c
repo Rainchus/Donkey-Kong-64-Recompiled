@@ -23,37 +23,37 @@ RECOMP_PATCH void func_global_asm_80627C5C(u8 arg0, s16 arg1, u8 arg2) {
             var_s0 = getTextString(1, arg0, 1);
             break;
         case 30:
-            var_s0 = (u8*)"K.ROOL:THOSE PESKY RECOMP DEVELOPERS DON'T KNOW WHEN THEIR RECOMP IS COMING OUT.";
+            var_s0 = (u8*)"K.ROOL:THOSE PESKY RECOMP DEVELOPERS...";
             break;
         case 31:
-            var_s0 = (u8*)"BUT EVEN THEY WILL HAVE TO ADMIT DEFEAT...";
+            var_s0 = (u8*)"THEY DON'T EVEN KNOW WHEN THEIR RECOMP IS COMING OUT";
             break;
         case 32:
-            var_s0 = (u8*)"...AFTER THEY REALIZE THAT SUMMER 2026 IS NEARLY OVER.";
+            var_s0 = (u8*)"IN FACT, SUMMER 2026 IS NEARLY OVER!";
             break;
         case 33:
-            var_s0 = (u8*)"NOTHING CAN STOP ME NOW. THEIR ANALOGUE 3D COLLECTION IS DOOMED!";
+            var_s0 = (u8*)"NOTHING CAN STOP ME NOW. SOON ONLY I WILL BE ABLE TO PLAY DK64!";
             break;
         case 34:
-            var_s0 = (u8*)"AH, THERE YOU ARE. I TRUST YOU'VE STOCKPILED ALL THE REMAINING N64 CONSOLES.";
+            var_s0 = (u8*)"AH, THERE YOU ARE. I TRUST YOU'VE STOCKPILED ALL THE REMAINING N64 CONSOLES?";
             break;
         case 35:
             var_s0 = (u8*)"DOGADON:OH, IT WAS AWFUL, MASTER.";
             break;
         case 36:
-            var_s0 = (u8*)"TURNS OUT THOSE HORRIBLE RECOMP DEVELOPERS HAVE JUST RELEASED THEIR RECOMP.";
+            var_s0 = (u8*)"THOSE HORRIBLE RECOMP DEVELOPERS JUST RELEASED THE DK64 RECOMP.";
             break;
         case 37:
-            var_s0 = (u8*)"THEY CAN NOW KNOCK ME INTO THE LAVA AT 200 FRAMES PER SECOND IN ULTRAWIDE.";
+            var_s0 = (u8*)"THEY KNOCKED ME INTO THE LAVA AT 200 FRAMES PER SECOND IN ULTRAWIDE.";
             break;
         case 38:
-            var_s0 = (u8*)"THEY'RE ALSO RELEASING THIS WITH TAG ANYWHERE SUPPORT.";
+            var_s0 = (u8*)"EVERYTHING IS IN 4K RESOLUTION AND OBJECTS LOAD FROM MILES AWAY.";
             break;
         case 39:
-            var_s0 = (u8*)"LOOK AT THE RELEASES, MASTER.";
+            var_s0 = (u8*)"THEY'RE ALSO RELEASING THIS WITH TAG ANYWHERE SUPPORT.";
             break;
         case 40:
-            var_s0 = (u8*)"I'M GOING TO PLAY THE REST OF THE GAME. I'LL COME BACK ONCE I REACH 101%.";
+            var_s0 = (u8*)"I'M JUST GONNA GO PLAY THE DK64 RECOMP MYSELF. GOODBYE.";
             break;
     }
     if (_strchr(var_s0, 0x3A) != NULL) {
