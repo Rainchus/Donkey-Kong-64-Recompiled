@@ -191,7 +191,6 @@ void fixMPBoundary(s16 *addr, s32 target, s32 grace) {
     }
 }
 
-extern f32 draw_distance_ratio;
 RECOMP_PATCH void func_global_asm_805FBFF4(s32 arg0) {
     s32 phi_s4;
     OSMesg* sp38;
@@ -304,7 +303,6 @@ RECOMP_PATCH void func_global_asm_805FBFF4(s32 arg0) {
 
         if (D_global_asm_8076A0B1 & 1 && !D_global_asm_8076A0B2) {
             func_global_asm_805FE7FC();
-            draw_distance_ratio = 1.0f;
             if (D_global_asm_807444F8 == 2) {
                 global_properties_bitfield |= 0x200;
                 D_global_asm_80744504 = 8;
