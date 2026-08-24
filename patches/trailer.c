@@ -41,16 +41,16 @@ RECOMP_PATCH void func_global_asm_80627C5C(u8 arg0, s16 arg1, u8 arg2) {
             var_s0 = (u8*)"DOGADON:OH, IT WAS AWFUL, MASTER.";
             break;
         case 36:
-            var_s0 = (u8*)"THEY KNOCKED ME INTO THE LAVA AT 200 FRAMES PER SECOND IN ULTRAWIDE.";
+            var_s0 = (u8*)"THEY KNOCKED ME INTO THE LAVA IN 4K RESOLUTION";
             break;
         case 37:
-            var_s0 = (u8*)"EVERYTHING IS IN 4K RESOLUTION AND OBJECTS LOAD FROM MILES AWAY.";
+            var_s0 = (u8*)"EVERYTHING IS MOVING AT 200 FRAMES PER SECOND";
             break;
         case 38:
-            var_s0 = (u8*)"THEY COULD TAG KONGS WITHOUT A TAG BARREL.";
+            var_s0 = (u8*)"OBJECTS LOADED FROM A MILE AWAY";
             break;
         case 39:
-            var_s0 = (u8*)"THOSE HORRIBLE DEVELOPERS JUST RELEASED THE DK64 RECOMP!!!";
+            var_s0 = (u8*)"THEY JUST RELEASED THE DK64 RECOMP!!!";
             break;
         case 40:
             var_s0 = (u8*)"I'M JUST GONNA GO PLAY IT MYSELF. GOODBYE.";
