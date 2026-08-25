@@ -73,27 +73,6 @@ typedef struct enemy_info {
     u16 unk46; // Used
 } EnemyInfo;
 
-typedef struct {
-    u8 pad0[0x2 - 0x0];
-    s16 unk2;
-    s16 unk4;
-    s16 unk6;
-    s16 unk8;
-    union {
-        u8 unkA_u8[2];
-        u16 unkA_u16;
-        s16 unkA_s16;
-    };
-    u8 unkC;
-    u8 unkD;
-    u8 unkE;
-    u8 unkF;
-    u8 unk10;
-    u8 unk11;
-    u8 unk12;
-    u8 unk13;
-} CharacterSpawner;
-
 u8 isFlagSet(s16 flagIndex, u8 flagType);
 void initializeCharacterSpawnerActor(void);
 void func_global_asm_80724CA4(s16 arg0, s16 arg1);

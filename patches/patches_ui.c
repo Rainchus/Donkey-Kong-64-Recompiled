@@ -3,58 +3,58 @@
 #include "patches_ui.h"
 
 
-void setSpriteAlignment(enumSpriteAlignment alignment) {
+void setSpriteAlignment(u8 alignment) {
     D_global_asm_807FDB1D = alignment;
 }
 
-Gfx *alignHUDTopBottom(Gfx * dl, enumSpriteAlignment alignment, s32 top, s32 bottom) {
+Gfx *alignHUDTopBottom(Gfx * dl, u8 alignment, s32 top, s32 bottom) {
     s32 margin_reduction = 0;
-    if (alignment == ALIGN_UNALIGNED) {
+    if (alignment == 1) {
         return dl;
     }
     gEXPushScissor(dl++);
     gEXPushViewport(dl++);
     gEXSetScissor(dl++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, top, 0, bottom);
-    if (alignment == ALIGN_RIGHT) {
+    if (alignment & ALIGN_POSITION_RIGHT) {
         // Right align
         gEXSetRectAlign(dl++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT,
             -(D_global_asm_80744490 - margin_reduction) * 4, 0,
             -(D_global_asm_80744490 - margin_reduction) * 4, 0);
         gEXSetViewportAlign(dl++, G_EX_ORIGIN_RIGHT, -(D_global_asm_80744490 - margin_reduction) * 4, 0);
-    } else if (alignment == ALIGN_LEFT) {
+    } else if (alignment & ALIGN_POSITION_LEFT) {
         gEXSetRectAlign(dl++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, 0, -margin_reduction * 4, 0, -margin_reduction * 4);
         gEXSetViewportAlign(dl++, G_EX_ORIGIN_LEFT, 0, 0);
     }
     return dl;
 }
 
-Gfx *alignHUD(Gfx * dl, enumSpriteAlignment alignment) {
+Gfx *alignHUD(Gfx * dl, u8 alignment) {
     return alignHUDTopBottom(dl, alignment, 0, D_global_asm_80744494);
 }
 
-Gfx *alignHUDGameplay(Gfx *dl, enumSpriteAlignment alignment) {
-    if (alignment == ALIGN_UNALIGNED) {
+Gfx *alignHUDGameplay(Gfx *dl, u8 alignment) {
+    if (alignment == 1) {
         return dl;
     }
     s32 margin_reduction = recomp_get_ui_pillar();
     gEXPushScissor(dl++);
     gEXPushViewport(dl++);
     gDPSetScissor(dl++, G_SC_NON_INTERLACE, 0, 0, D_global_asm_80744490, D_global_asm_80744494);
-    if (alignment == ALIGN_RIGHT) {
+    if (alignment & ALIGN_POSITION_RIGHT) {
         // Right align
         gEXSetRectAlign(dl++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT,
             -(D_global_asm_80744490 - margin_reduction) * 4, 0,
             -(D_global_asm_80744490 - margin_reduction) * 4, 0);
         gEXSetViewportAlign(dl++, G_EX_ORIGIN_RIGHT, -(D_global_asm_80744490 - margin_reduction) * 4, 0);
-    } else if (alignment == ALIGN_LEFT) {
+    } else if (alignment & ALIGN_POSITION_LEFT) {
         gEXSetRectAlign(dl++, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_LEFT, -margin_reduction * 4, 0, -margin_reduction * 4, 0);
         gEXSetViewportAlign(dl++, G_EX_ORIGIN_LEFT, -margin_reduction * 4, 0);
     }
     return dl;
 }
 
-Gfx *popHUD(Gfx *dl, enumSpriteAlignment alignment) {
-    if (alignment == ALIGN_UNALIGNED) {
+Gfx *popHUD(Gfx *dl, u8 alignment) {
+    if (alignment == 1) {
         return dl;
     }
     gEXPopScissor(dl++);
@@ -72,14 +72,6 @@ extern u8 disable_sprite_interpolation;
 extern u8 cur_drawn_model_skip_interpolation;
 Gfx *set_model_matrix_group(Gfx * dl, void *geo_list, u8 skip_rotation, u8 *pushed);
 Gfx *pop_model_matrix_group(Gfx *dl);
-
-u8 localSpriteInterpDisabled(Struct80717D84* sprite) {
-    return (sprite->unk36F & 0x8) != 0;
-}
-
-u8 getRawAlignment(Struct80717D84* sprite) {
-    return sprite->unk36F & ~0x8;
-}
 
 //@recomp: Drawing sprite gfx function
 RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16 arg2) {
@@ -103,7 +95,12 @@ RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16
     if ((((gPlayerPointer->control_state == 0x83) || (gPlayerPointer->control_state == 0x67)) && !(sprite->unk38C & 0x20)) || (((global_properties_bitfield & 0x100002) == 0x100002) && !(sprite->unk38C & 0x100))) {
         return dl;
     }
-    raw_alignment = getRawAlignment(sprite);
+    raw_alignment = sprite->unk36F;
+    if (sprite->unk36F & ALIGN_HIDING_IN_OVERSCAN) {
+        if (((sprite->unk340 * 0.25) < 11) || ((sprite->unk340 * 0.25) > 309)) {
+            return dl;
+        }
+    }
     if (arg2 == -1) {
         arg2 = sprite->unk38A;
     }
@@ -128,7 +125,7 @@ RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16
     cur_model_transform_id_offset = 0;
     gSPMatrix(dl++, &identity_fixed_mtx, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
     cur_drawn_model_skip_interpolation = disable_sprite_interpolation;
-    if (localSpriteInterpDisabled(sprite)) {
+    if (sprite->unk36F & ALIGN_NO_INTERP) {
         cur_drawn_model_skip_interpolation = TRUE;
     }
     dl = set_model_matrix_group(dl, NULL, FALSE, &pushed_matrix_group);
@@ -165,7 +162,7 @@ RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16
         gSPMatrix(temp_s0++, &D_20000C0, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
         gSPMatrix(temp_s0++, &D_2000180, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         temp_s0 = func_global_asm_805FD030(temp_s0);
-        if (raw_alignment == ALIGN_UNALIGNED) {
+        if (raw_alignment == 1) {
             if (sprite->unk388 == -1) {
                 gDPSetScissor(temp_s0++, G_SC_NON_INTERLACE,
                     sprite->unk38E,
@@ -233,7 +230,7 @@ RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16
     if (raw_alignment != 0) {
         gSPMatrix(temp_s0++, &D_2000000, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
         gSPMatrix(temp_s0++, &D_2000200, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        if (raw_alignment == ALIGN_UNALIGNED) {
+        if (raw_alignment == 1) {
             if (sprite->unk388 == -1) {
                 gDPSetScissor(temp_s0++, G_SC_NON_INTERLACE,
                     0,
@@ -246,7 +243,7 @@ RECOMP_PATCH Gfx * func_global_asm_80715E94(Struct80717D84* sprite, Gfx *dl, s16
     }
     gDPPipeSync(temp_s0++);
     gSPEndDisplayList(temp_s0++);
-    if ((raw_alignment != ALIGN_NOT_2D) && (raw_alignment != ALIGN_UNALIGNED)) {
+    if (raw_alignment > 1) {
         dl = popHUD(dl, raw_alignment);
     }
     D_global_asm_807F6009 = 5;
@@ -262,13 +259,13 @@ RECOMP_PATCH Gfx *func_global_asm_806F9D8C(s32 arg0, Struct806FA504_arg1 *arg1, 
     f32 temp_f0;
     s32 var_a2;
     s32 sp5C;
-    enumSpriteAlignment alignment;
+    u8 alignment;
 
     sp74 = arg1->unk14;
     temp_f0 = func_global_asm_80612794(arg1->unk10);
     sp6B = temp_f0 * 255.0;
     sp5C = 0;
-    alignment = ALIGN_UNALIGNED;
+    alignment = 1;
     if (D_global_asm_80754280->hud_item[arg0].screen_x < 80) {
         alignment = ALIGN_LEFT;
     } else if (D_global_asm_80754280->hud_item[arg0].screen_x > 240) {
@@ -332,10 +329,10 @@ RECOMP_PATCH void func_menu_80030894(MenuAdditionalActorData *arg0, void *sprite
     f32 dY;
     f32 d;
     f32 temp_f2;
-    enumSpriteAlignment alignment;
+    u8 alignment;
 
     func_global_asm_80714998(arg5);
-    alignment = ALIGN_UNALIGNED;
+    alignment = 1;
     switch (arg6) {
         case 0:
             // A/B Buttons (Barrel Screen, File Select, File Info, Delete Select,
@@ -347,10 +344,11 @@ RECOMP_PATCH void func_menu_80030894(MenuAdditionalActorData *arg0, void *sprite
         case 0xB: // A/B Buttons (Multi Join)
         case 0xD: // A/B/CDown Buttons (Multi Join)
         case 0x10:  // A Button (Mystery Menu)
+        case 0x11: // Z Button (Mystery Menu)
             if (x > 240) {
-                alignment = ALIGN_RIGHT;
+                alignment = ALIGN_RIGHT | ALIGN_HIDING_IN_OVERSCAN;
             } else if (x < 80) {
-                alignment = ALIGN_LEFT;
+                alignment = ALIGN_LEFT | ALIGN_HIDING_IN_OVERSCAN;
             }
             break;
         case 2: // GB, Orange (file select screen)
@@ -363,7 +361,6 @@ RECOMP_PATCH void func_menu_80030894(MenuAdditionalActorData *arg0, void *sprite
         case 12: // Z Button (sound, options)
         case 14: // Fairy (Mystery Menu)
         case 15: // Kong Heads (file info screen), kong placeholders (multi join)
-        case 0x11: // Z Button (Mystery Menu)
         case 0x12: // Barrel Bottom
         default:
             break;
@@ -428,11 +425,11 @@ RECOMP_PATCH void func_global_asm_806F9744(Struct806F9744_arg0 *arg0, s32 arg1, 
     s32 temp[2]; // TODO: Hmm
     s32 sp2C;
     Struct806F9744_arg0_unk14 *temp_s0;
-    enumSpriteAlignment alignment;
+    u8 alignment;
 
     temp_s0 = arg0->unk14;
     sp2C = 2;
-    alignment = ALIGN_UNALIGNED;
+    alignment = 1;
     if (x < 80) {
         alignment = ALIGN_LEFT;
     } else if (x > 240) {
@@ -677,7 +674,7 @@ RECOMP_PATCH void func_bonus_8002733C(Struct8002733C *arg0) {
 RECOMP_PATCH Gfx *func_global_asm_8070068C(Gfx *dl) {
     gSPMatrix(dl++, &D_2000100, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPViewport(dl++, osVirtualToPhysical(&character_change_array->unk250[D_global_asm_807444FC]));
-    if ((D_global_asm_807FDB1D == ALIGN_NOT_2D) || (D_global_asm_807FDB1D == ALIGN_UNALIGNED)) {
+    if (D_global_asm_807FDB1D < 2) {
         gDPSetScissor(
             dl++,
             G_SC_NON_INTERLACE,
@@ -704,7 +701,7 @@ RECOMP_PATCH Gfx *func_global_asm_806A2B90(Gfx *dl, Actor *arg1) {
     f32 sp38;
     f32 sp34;
     s32 sp30;
-    enumSpriteAlignment alignment;
+    u8 alignment;
 
     sp5C = arg1->AAD_as_array[0];
     if (func_global_asm_805FCA64()) {
@@ -727,13 +724,13 @@ RECOMP_PATCH Gfx *func_global_asm_806A2B90(Gfx *dl, Actor *arg1) {
             if (arg1->unk168 == 3) {
                 var_v0 = -7;
             }
-            alignment = ALIGN_UNALIGNED;
+            alignment = 1;
             if (arg1->x_position > 200) {
                 alignment = ALIGN_RIGHT;
             } else if (arg1->x_position < 120) {
                 alignment = ALIGN_LEFT;
             }
-            if (alignment != ALIGN_UNALIGNED) {
+            if (alignment != 1) {
                 dl = alignHUD(dl, ALIGN_RIGHT);
             }
             setSpriteAlignment(alignment);
@@ -741,8 +738,8 @@ RECOMP_PATCH Gfx *func_global_asm_806A2B90(Gfx *dl, Actor *arg1) {
                 sp5C->unk10, sp30, 
                 arg1->x_position + var_v0, 
                 arg1->y_position + 5.0f, 0.0f, 1.0f);
-            setSpriteAlignment(ALIGN_NOT_2D);
-            if (alignment != ALIGN_UNALIGNED) {
+            setSpriteAlignment(0);
+            if (alignment != 1) {
                 dl = popHUD(dl, alignment);
             }
             if (arg1->control_state == 2) {
@@ -801,7 +798,7 @@ RECOMP_PATCH Gfx* func_global_asm_8068DC54(Gfx* dl, s16 arg1, s16 arg2, s16* arg
         arg2,
         character_change_array->unk270[2],
         arg2 + 0x1B);
-    if ((D_global_asm_807FDB1D != ALIGN_NOT_2D) && (D_global_asm_807FDB1D != ALIGN_UNALIGNED)) {
+    if (D_global_asm_807FDB1D > 1) {
         dl = alignHUDTopBottom(dl, D_global_asm_807FDB1D, arg2, arg2 + 0x1B);
     }
     for (var_v1 = *arg3; var_v1 >= 0x64; var_v1 -= 0x64) {
@@ -834,7 +831,7 @@ RECOMP_PATCH Gfx* func_global_asm_8068DC54(Gfx* dl, s16 arg1, s16 arg2, s16* arg
         dl = printStyledText(dl, 3, (arg1 * 4) + 0x50, ((arg2 * 4) - 0x60) + sp74, (u8*)&sp64, 1U);
         dl = printStyledText(dl, 3, (arg1 * 4) + 0x50, ((arg2 * 4) + 4) + sp74, (u8*)&sp6C, 1U);
     }
-    if ((D_global_asm_807FDB1D != ALIGN_NOT_2D) && (D_global_asm_807FDB1D != ALIGN_UNALIGNED)) {
+    if (D_global_asm_807FDB1D > 1) {
         dl = popHUD(dl, D_global_asm_807FDB1D);
     }
     var_v1_2 = arg1 - 0x14;
@@ -849,7 +846,7 @@ RECOMP_PATCH Gfx* func_global_asm_8068DC54(Gfx* dl, s16 arg1, s16 arg2, s16* arg
             character_change_array->unk270[2],
             arg2 + 0x1B
         );
-        if ((D_global_asm_807FDB1D != ALIGN_NOT_2D) && (D_global_asm_807FDB1D != ALIGN_UNALIGNED)) {
+        if (D_global_asm_807FDB1D > 1) {
             dl = alignHUDTopBottom(dl, D_global_asm_807FDB1D, arg2, arg2 + 0x1B);
         }
         _sprintf(sp60, "%d", var_s0);
@@ -862,7 +859,7 @@ RECOMP_PATCH Gfx* func_global_asm_8068DC54(Gfx* dl, s16 arg1, s16 arg2, s16* arg
                 dl = printStyledText(dl, 3, temp_s0, ((arg2 * 4) + 4) + sp74, (u8*)"1", 1U);
             }
         }
-        if ((D_global_asm_807FDB1D != ALIGN_NOT_2D) && (D_global_asm_807FDB1D != ALIGN_UNALIGNED)) {
+        if (D_global_asm_807FDB1D > 1) {
             dl = popHUD(dl, D_global_asm_807FDB1D);
         }
     }
@@ -890,12 +887,12 @@ RECOMP_PATCH Gfx *func_bonus_80024000(Gfx *dl, Actor *arg1) {
         dl = alignHUD(dl, ALIGN_LEFT);
         setSpriteAlignment(ALIGN_LEFT);
         dl = func_global_asm_806FE078(dl, a178->unk9, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-        setSpriteAlignment(ALIGN_NOT_2D);
+        setSpriteAlignment(0);
         dl = popHUD(dl, ALIGN_LEFT);
         // Counter
         setSpriteAlignment(ALIGN_LEFT);
         dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &a178->unk2, a178->unk4, &a178->unk8);
-        setSpriteAlignment(ALIGN_NOT_2D);
+        setSpriteAlignment(0);
     }
     return dl;
 }
@@ -915,12 +912,12 @@ RECOMP_PATCH Gfx *func_bonus_800252A0(Gfx *dl, Actor *arg1) {
     dl = alignHUD(dl, ALIGN_LEFT);
     setSpriteAlignment(ALIGN_LEFT);
     dl = func_global_asm_806FE078(dl, aaD->unk19, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-    setSpriteAlignment(ALIGN_NOT_2D);
+    setSpriteAlignment(0);
     dl = popHUD(dl, ALIGN_LEFT);
     // Counter
     setSpriteAlignment(ALIGN_LEFT);
     dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &aaD->unk14, aaD->unk16, &aaD->unk18);
-    setSpriteAlignment(ALIGN_NOT_2D);
+    setSpriteAlignment(0);
     return dl;
 }
 
@@ -960,7 +957,7 @@ RECOMP_PATCH Gfx *func_bonus_80026940(Gfx *dl, Actor *KoshController) {
         dl = alignHUD(dl, ALIGN_LEFT);
         setSpriteAlignment(ALIGN_LEFT);
         dl = func_global_asm_806FE078(dl, init->unk25, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-        setSpriteAlignment(ALIGN_NOT_2D);
+        setSpriteAlignment(0);
         dl = popHUD(dl, ALIGN_LEFT);
         // Counter
         setSpriteAlignment(ALIGN_LEFT);
@@ -971,7 +968,7 @@ RECOMP_PATCH Gfx *func_bonus_80026940(Gfx *dl, Actor *KoshController) {
             &init->hit_requirement,
             init->hit_requirement_hud,
             &init->unk24);
-        setSpriteAlignment(ALIGN_NOT_2D);
+        setSpriteAlignment(0);
     }
     if (aad->unk25 != 0) {
         x = D_global_asm_80744490 >> 1;
@@ -1035,12 +1032,12 @@ RECOMP_PATCH Gfx* func_bonus_80029B9C(Gfx* dl, Actor* arg1) {
                 dl = alignHUD(dl, ALIGN_LEFT);
                 setSpriteAlignment(ALIGN_LEFT);
                 dl = func_global_asm_806FE078(dl, aad178_copy->unk11, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-                setSpriteAlignment(ALIGN_NOT_2D);
+                setSpriteAlignment(0);
                 dl = popHUD(dl, ALIGN_LEFT);
                 // Counter
                 setSpriteAlignment(ALIGN_LEFT);
                 dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &aad178_copy->unk14, aad178_copy->unk16, &aad178_copy->unk12);
-                setSpriteAlignment(ALIGN_NOT_2D);
+                setSpriteAlignment(0);
             }
             break;
         case ACTOR_BARRELGUN_PERILPATHPANIC:
@@ -1049,12 +1046,12 @@ RECOMP_PATCH Gfx* func_bonus_80029B9C(Gfx* dl, Actor* arg1) {
                 dl = alignHUD(dl, ALIGN_LEFT);
                 setSpriteAlignment(ALIGN_LEFT);
                 dl = func_global_asm_806FE078(dl, aad178->unk3, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-                setSpriteAlignment(ALIGN_NOT_2D);
+                setSpriteAlignment(0);
                 dl = popHUD(dl, ALIGN_LEFT);
                 // Counter
                 setSpriteAlignment(ALIGN_LEFT);
                 dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &aad178->unk8, aad178->unkA, &aad178->unk6);
-                setSpriteAlignment(ALIGN_NOT_2D);
+                setSpriteAlignment(0);
                 break;
             }
             break;
@@ -1069,12 +1066,12 @@ RECOMP_PATCH Gfx* func_bonus_80029B9C(Gfx* dl, Actor* arg1) {
                     dl = alignHUD(dl, ALIGN_LEFT);
                     setSpriteAlignment(ALIGN_LEFT);
                     dl = func_global_asm_806FE078(dl, aad->unk25, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-                    setSpriteAlignment(ALIGN_NOT_2D);
+                    setSpriteAlignment(0);
                     dl = popHUD(dl, ALIGN_LEFT);
                     // Counter
                     setSpriteAlignment(ALIGN_LEFT);
                     dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &aad->unk28, aad->unk2A, &aad->unk26);
-                    setSpriteAlignment(ALIGN_NOT_2D);
+                    setSpriteAlignment(0);
                     break;
             }
         default:
@@ -1118,12 +1115,12 @@ RECOMP_PATCH Gfx *func_bonus_8002CC08(Gfx *dl, Actor *arg1) {
             dl = alignHUD(dl, ALIGN_LEFT);
             setSpriteAlignment(ALIGN_LEFT);
             dl = func_global_asm_806FE078(dl, aaD->unk23, 8, 30.0f, 36.0f, 0.0f, 1.5f);
-            setSpriteAlignment(ALIGN_NOT_2D);
+            setSpriteAlignment(0);
             dl = popHUD(dl, ALIGN_LEFT);
             // Counter
             setSpriteAlignment(ALIGN_LEFT);
             dl = func_global_asm_8068DC54(dl, 0x26, 0x32, &aaD->unk26, aaD->unk28, &aaD->unk24);
-            setSpriteAlignment(ALIGN_NOT_2D);
+            setSpriteAlignment(0);
             break;
     }
     return dl;
@@ -1150,12 +1147,12 @@ RECOMP_PATCH Gfx *func_bonus_8002D010(Gfx *dl, Actor *arg1) {
     dl = alignHUD(dl, ALIGN_LEFT);
     setSpriteAlignment(ALIGN_LEFT);
     dl = func_global_asm_806FE078(dl, aaD->unk3, 8, 30.0f, 36.0f, 0.0f, 1.0f);
-    setSpriteAlignment(ALIGN_NOT_2D);
+    setSpriteAlignment(0);
     dl = popHUD(dl, ALIGN_LEFT);
     // Counter
     setSpriteAlignment(ALIGN_LEFT);
     dl = func_global_asm_8068DC54(dl, 0x26, 0x2D, &aaD->unk8, aaD->unkA, &aaD->unk6);
-    setSpriteAlignment(ALIGN_NOT_2D);
+    setSpriteAlignment(0);
 
     if (aaD->unk6 > 0) {
         aaD->unk6 -= 2;
@@ -2520,10 +2517,10 @@ RECOMP_PATCH void func_global_asm_806AC07C(Struct80717D84* arg0, s8* arg1) {
     dy = ABS_F(arg0->unk344 - old_y);
     if ((dx > 80.0f) || (dy > 80.0f)) {
         // Disable interpolation
-        arg0->unk36F |= 0x8;
+        arg0->unk36F |= ALIGN_NO_INTERP;
     } else {
         // Re-enable interpolation
-        arg0->unk36F &= ~0x8;
+        arg0->unk36F &= ~ALIGN_NO_INTERP;
     }
 }
 

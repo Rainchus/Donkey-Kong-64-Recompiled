@@ -776,6 +776,7 @@ extern f32 func_global_asm_80612D10(f32 arg0);
 
 #define GPACK_RGBA32(r, g, b, a) (((u8)(r) << 0x18) | ((u8)(g) << 0x10) | ((u8)(b) << 0x8) | (u8)(a))
 extern u8 skip_interpolation;
+extern u8 skip_persp_interp;
 
 // @recomp: Render skybox blend
 RECOMP_PATCH Gfx* func_global_asm_80704B20(Gfx* dl, f32 arg1, f32 arg2, Mtx* arg3, u8 arg4, u8 arg5, u8 arg6, s8 arg7, f32 arg8) {
@@ -878,7 +879,7 @@ RECOMP_PATCH Gfx* func_global_asm_80704B20(Gfx* dl, f32 arg1, f32 arg2, Mtx* arg
     gSP2Triangles(dl++, 0, 1, 3, 0, 0, 3, 2, 0);
     gSP2Triangles(dl++, 2, 3, 4, 0, 2, 4, 5, 0);
     gSP2Triangles(dl++, 5, 4, 6, 0, 5, 6, 7, 0);
-    if (skip_interpolation) {
+    if (skip_interpolation || skip_persp_interp) {
         gEXMatrixGroupSkipAllAspect(dl++, MTXTAG_SKYBOXBLEND, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_EDIT_NONE, G_EX_ASPECT_AUTO);
     } else {
         gEXMatrixGroup(dl++, MTXTAG_SKYBOXBLEND, G_EX_INTERPOLATE_SIMPLE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_ASPECT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO);
@@ -980,7 +981,7 @@ RECOMP_PATCH Gfx* func_global_asm_807069A4(Gfx* dl, f32 arg1, f32 arg2, s32 arg3
             sp12C[i].unkC, sp12C[i].unk10, sp12C[i].unk14,
             0x10U, 0x10U);
     }
-    if (skip_interpolation) {
+    if (skip_interpolation || skip_persp_interp) {
         gEXMatrixGroupSkipAllAspect(dl++, MTXTAG_SKYBOXBLEND, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_EDIT_NONE, G_EX_ASPECT_AUTO);
     } else {
         gEXMatrixGroup(dl++, MTXTAG_SKYBOXBLEND, G_EX_INTERPOLATE_SIMPLE, G_EX_NOPUSH, G_MTX_PROJECTION, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_INTERPOLATE, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_ASPECT_AUTO, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO);

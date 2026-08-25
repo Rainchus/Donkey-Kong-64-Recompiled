@@ -9,7 +9,7 @@
 
 namespace dk64 {
     inline const std::u8string program_id = u8"DK64Recompiled";
-    inline const std::string program_name = "DK64: Recompiled";
+    inline const std::string program_name = "DK64: Rekongpiled";
 
     namespace configkeys {
         namespace general {

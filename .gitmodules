@@ -12,3 +12,6 @@
 [submodule "lib/dk64_decomp"]
 	path = lib/dk64_decomp
 	url = https://gitlab.com/dk64_decomp/dk64
+[submodule "lib/vcpkg"]
+	path = lib/vcpkg
+	url = https://github.com/microsoft/vcpkg

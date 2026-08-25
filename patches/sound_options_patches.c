@@ -427,7 +427,7 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
         stick_y = D_global_asm_807FD610[cc_player_index].unk2F;
         recomp_get_first_person_inverted_axes(&invX, &invY);
         recomp_get_mouse_deltas(&dMouseX, &dMouseY);
-        recomp_get_gyro_deltas(&dGyroX, &dGyroY);
+        recomp_get_gyro_deltas(&dGyroY, &dGyroX);
         if (invX) stick_x = -stick_x;
         if (!invY) stick_y = -stick_y;
         if (stick_x == 0) {

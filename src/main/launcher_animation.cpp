@@ -49,6 +49,7 @@ struct LauncherContext {
     std::array<AnimatedSvg, 3> cloud_svgs;
     recompui::Element *wrapper;
     recompui::Element *water;
+    recompui::Label *credits_label;
     float wrapper_phase = -1.0f;
     std::chrono::steady_clock::time_point last_update_time;
     float seconds = 0.0f;
@@ -342,6 +343,16 @@ void dk64::launcher_animation_setup(recompui::LauncherMenu *menu) {
     launcher_context.water->set_width(100, recompui::Unit::Percent);
     launcher_context.water->set_height(100, recompui::Unit::Percent);
     launcher_context.water->set_background_color({ 0x00, 0x66, 0xCC, 0x7F});
+
+    launcher_context.credits_label = context.create_element<recompui::Label>(
+        background_container, 
+        "DK64 Rekongpiled by Rainchus, Ballaam, KillKlli, GreenBean and UmedMuzl", 
+        recompui::LabelStyle::Small
+    );
+    launcher_context.credits_label->set_position(recompui::Position::Absolute);
+    launcher_context.credits_label->set_bottom(4.0f, recompui::Unit::Dp);
+    launcher_context.credits_label->set_right(4.0f, recompui::Unit::Dp);
+    launcher_context.credits_label->set_font_family("Suplexmentary Comic NC");
 
     // Install an event watch to skip the launcher animation if a keyboard, mouse or controller input is detected.
     SDL_AddEventWatch(&launcher_event_watch, nullptr);

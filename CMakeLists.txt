@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
+if(NOT DEFINED ENV{VCPKG_ROOT})
+    set(ENV{VCPKG_ROOT} ${CMAKE_SOURCE_DIR}/lib/vcpkg)
+endif()
+
+include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
 if (APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
 endif()

@@ -47,16 +47,13 @@ u32 func_global_asm_806119A0(void); // Having this here to prevent having to dec
 #define ABS(d) (((d) > 0) ? (d) : -(d))
 #define CLAMP(value, min, max) ((value) < (min) ? (min) : MIN(max, value))
 
-typedef enum enumSpriteAlignment {
-    ALIGN_NOT_2D = 0x0,
-    ALIGN_UNALIGNED = 0x1,
-    ALIGN_LEFT = 0x2,
-    ALIGN_RIGHT = 0x3,
-    ALIGN_NOT_2D_NOINTERP = 0x8,
-    ALIGN_UNALIGNED_NOINTERP = 0x9,
-    ALIGN_LEFT_NOINTERP = 0xA,
-    ALIGN_RIGHT_NOINTERP = 0xB,
-} enumSpriteAlignment;
+#define ALIGN_ON_SCREEN 0x01
+#define ALIGN_POSITION_LEFT 0x02
+#define ALIGN_POSITION_RIGHT 0x04
+#define ALIGN_HIDING_IN_OVERSCAN 0x08
+#define ALIGN_NO_INTERP 0x10
+#define ALIGN_LEFT (ALIGN_POSITION_LEFT | ALIGN_ON_SCREEN)
+#define ALIGN_RIGHT (ALIGN_POSITION_RIGHT | ALIGN_ON_SCREEN)
 
 typedef enum interpolationIDs {
     MTXTAG_DEFAULT,
@@ -64,11 +61,15 @@ typedef enum interpolationIDs {
     MTXTAG_FRAMEBUFFERTRANSITION,
     MTXTAG_TAG3,
     MTXTAG_SKYBOXBLEND,
+    MTXTAG_CAMERAPROJECTION,
+    MTXTAG_MAINMENU_BARREL = 0xF00,
     MTXTAG_ACTORS = 0x1000, // 0x100 allocated per actor
     MTXTAG_PROP = 0x101000,
     MTXTAG_PROPSPRITE = 0x101800,
     MTXTAG_SPRITE = 0x102000,
     MTXTAG_TEXT = 0x200000,
+    MTXTAG_FLUIDS = 0x400000,
+    MTXTAG_SOLAR_FLARE = 0x400100,
 } interpolationIDs;
 
 typedef struct AnimationStateUnk0_0 {
@@ -183,6 +184,9 @@ struct struct806A57C0_3 {
     s32 unkC;
     struct806A57C0_3_sub10 unk10;
     Struct806A57C0_3* unkA0; // Used
+    u16 interpolation_id;
+    u8 padA6;
+    u8 initialized;
 };
 
 struct struct806A57C0_2 {
@@ -1130,7 +1134,7 @@ struct actor {
     u32 unk44;
     u32 unk48;
     u32 unk4C;
-    u32 unk50;
+    void *unk50;
     u32 unk54;
     Actors unk58;
     u16 interactable; // Bitfield at 0x5C
@@ -1978,6 +1982,7 @@ struct Struct80717D84 {
     Struct80717D84 *unk39C;
 };
 
+
 typedef struct ActorSpawner ActorSpawner;
 
 struct ActorSpawner {
@@ -2120,3 +2125,24 @@ typedef struct {
     // TODO: proper bitfield syntax
 	u16 properties_bitfield; // = 0x46 bitfield -- TODO: Document this, find where this comes from so we can display stuff pre-load
 } EnemySpawner; // 807FDC8C pointer to array of structs, count at 807FDC88
+
+typedef struct {
+    u8 pad0[0x2 - 0x0];
+    s16 unk2;
+    s16 unk4;
+    s16 unk6;
+    s16 unk8;
+    union {
+        u8 unkA_u8[2];
+        u16 unkA_u16;
+        s16 unkA_s16;
+    };
+    u8 unkC;
+    u8 unkD;
+    u8 unkE;
+    u8 unkF;
+    u8 unk10;
+    u8 unk11;
+    u8 unk12;
+    u8 unk13;
+} CharacterSpawner;

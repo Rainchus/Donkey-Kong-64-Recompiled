@@ -191,6 +191,7 @@ void fixMPBoundary(s16 *addr, s32 target, s32 grace) {
     }
 }
 
+extern void clear_actor_interpolation_lockdowns(void);
 RECOMP_PATCH void func_global_asm_805FBFF4(s32 arg0) {
     s32 phi_s4;
     OSMesg* sp38;
@@ -303,6 +304,7 @@ RECOMP_PATCH void func_global_asm_805FBFF4(s32 arg0) {
 
         if (D_global_asm_8076A0B1 & 1 && !D_global_asm_8076A0B2) {
             func_global_asm_805FE7FC();
+            clear_actor_interpolation_lockdowns();  // @recomp: flush actor interp lockdowns to prevent it getting clogged with stale references
             if (D_global_asm_807444F8 == 2) {
                 global_properties_bitfield |= 0x200;
                 D_global_asm_80744504 = 8;

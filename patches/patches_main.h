@@ -213,7 +213,7 @@ s16 playSound(s16 arg0, s32 arg1, f32 arg2, f32 arg3, u8 arg4, u8 arg5);
 void func_global_asm_80601CF0(s32 arg0);
 void func_global_asm_8060E930(void);
 void func_global_asm_80611724(u32, u32);
-void func_global_asm_80611408(s32);
+void func_global_asm_80611408(void *ptr);
 void boot_osPiRawStartDma(s32, s32, void*, s32);
 void func_global_asm_805FBC5C(void);
 void osViSetSpecialFeatures(u32);

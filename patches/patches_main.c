@@ -67,7 +67,7 @@ RECOMP_PATCH void func_global_asm_80611730(void) {
     do {
         entry->unk4--;
         if (entry->unk4 == 0 && !corrupted) {
-            func_global_asm_80611408(entry->unk0);
+            func_global_asm_80611408((void*)entry->unk0);
             count = --D_global_asm_807F5A58;
             *entry = D_global_asm_807F0A58[count];
         }

@@ -238,6 +238,7 @@ RECOMP_PATCH void func_global_asm_8060F254(Struct131B0_2* arg0) {
     Struct131B0_1* temp_v0_3;
     s32 sp48;
     s32 i;
+    OSMesgQueue *audioQueue;
 
     arg0->unk_284 += 1;
     arg0->unk_280 += 1;
@@ -303,7 +304,19 @@ RECOMP_PATCH void func_global_asm_8060F254(Struct131B0_2* arg0) {
     }
 
     if ((arg0->unk264 != 0) && !(arg0->unk_284 & 1)) {
-        osSetTimer(&D_global_asm_807F0540, 280000, 0, (OSMesgQueue *)arg0->unk264->unk_50->unk_04, (void* )5);
+        // osSetTimer(&D_global_asm_807F0540, 280000, 0, (OSMesgQueue *)arg0->unk264->unk_50->unk_04, (void* )5);
+        /*
+            @recomp: To those reading this, this was an *annoying* side-quest to go on to fix this
+            Turns out that this (the above commented out code) is a race condition with many layers, just like ogres.
+            The audio engine would die (either via crash or just not making a sound) if too much load was placed on the PC.
+            Reducing the timer would fix this issue on lower-power systems, but would cause double-audio
+            issues on those which ran fine.
+            Having a guard of validCount == 0 blocks the double-audio issue whilst solving the race condition.
+        */
+        audioQueue = (OSMesgQueue *)arg0->unk264->unk_50->unk_04;
+        if (audioQueue->validCount == 0) {
+            osSendMesg(audioQueue, (void*)5, OS_MESG_NOBLOCK);
+        }
     }
     
     for (temp_v0_3 = arg0->unk260; temp_v0_3 != NULL; temp_v0_3 = temp_v0_3->next) {
@@ -326,7 +339,7 @@ RECOMP_PATCH Gfx *func_global_asm_805FE4D4(Gfx *dl) {
     }
     gEXSetRefreshRate(dl++, 60 / delta);
     // Interpolation
-    dl = handle_interpolation(dl, MTXTAG_GLOBAL, TRUE);
+    dl = handle_interpolation(dl, MTXTAG_CAMERAPROJECTION, TRUE);
     // 
     gEXSetNearClipping(dl++, FALSE);
     gEXSetTexcoordWrapPoint(dl++, 256 * 4, 256 * 4);
