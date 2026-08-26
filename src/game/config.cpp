@@ -3,6 +3,7 @@
 #include "recompui/config.h"
 #include "recompinput/recompinput.h"
 #include "donk_sound.h"
+#include "donk_draw.h"
 #include "banjo_support.h"
 #include "ultramodern/config.hpp"
 #include "librecomp/files.hpp"
@@ -151,6 +152,11 @@ T get_graphics_config_enum_value(const std::string& option_id) {
 }
 
 template <typename T = uint32_t>
+T get_graphics_config_number_value(const std::string& option_id) {
+    return static_cast<T>(std::get<double>(recompui::config::get_graphics_config().get_option_value(option_id)));
+}
+
+template <typename T = uint32_t>
 T get_technical_config_enum_value(const std::string& option_id) {
     return static_cast<T>(std::get<uint32_t>(recompui::config::get_config("technical").get_option_value(option_id)));
 }
@@ -196,10 +202,20 @@ static void add_graphics_options(recomp::config::Config &config) {
         cutscene_border_options,
         dk64::CutsceneBordersMode::On
     );
+    config.add_percent_number_option(
+        dk64::configkeys::graphics::draw_distance,
+        "Draw Distance",
+        "Controls the overall volume of background music.",
+        0.0f
+    );
 }
 
 dk64::CutsceneBordersMode dk64::get_cutscene_borders() {
     return get_graphics_config_enum_value<dk64::CutsceneBordersMode>(dk64::configkeys::graphics::cutscene_borders);
+}
+
+int dk64::get_draw_distance() {
+    return get_graphics_config_number_value<int>(dk64::configkeys::graphics::draw_distance);
 }
 
 static void add_technical_options(recomp::config::Config &config) {

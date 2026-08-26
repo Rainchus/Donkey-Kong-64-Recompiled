@@ -31,6 +31,7 @@ namespace dk64 {
 
         namespace graphics {
             inline const std::string cutscene_borders = "cutscene_borders";
+            inline const std::string draw_distance = "draw_distance";
         }
 
         namespace technical {

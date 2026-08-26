@@ -738,20 +738,6 @@ typedef struct {
     s16 unk2;
     EnemySpawner *firstSpawner;
 } EnemySpawnerLocator;
-typedef struct {
-    u16 unk0;
-    u16 unk2;
-    s32 unk4;
-    s32 unk8;
-    s16 unkC;
-    u8 unkE;
-    u8 unkF;
-    s32 unk10;
-    u8 unk14;
-    u8 unk15;
-    u8 unk16;
-    u8 unk17;
-} Struct8075EB80;
 
 
 extern void func_global_asm_8067AB20(Actor *arg0, Actor *arg1, s32 arg2, u8 arg3, void *arg4, u8 arg5);
@@ -760,7 +746,6 @@ extern s32 spawnActor(Actors actorIndex, s32 modelIndex);
 extern void func_global_asm_80726744(Actor *, EnemySpawner *);
 extern EnemySpawnerLocator* D_global_asm_80755694;
 extern GlobalASMStruct35 D_global_asm_807FBB70;
-extern Struct8075EB80 D_global_asm_8075EB80[];
 extern Actor *gLastSpawnedActor;
 extern Actor *gCurrentActorPointer;
 

@@ -203,9 +203,9 @@ extern s32 D_global_asm_8076A088;
 RECOMP_PATCH void func_global_asm_805FE544(u8 arg0) {
     s32 temp;
     s32 stored_temp;
-    // @recomp: Double the DL Allocation
+    // @recomp: Quadruple the DL Allocation
     if (D_global_asm_807FBB64 & 1) {
-        temp = 12000;
+        temp = 24000;
         stored_temp = temp;
         recomp_adjust_dl_allocation(&temp);
         if (stored_temp > temp) {
@@ -214,7 +214,7 @@ RECOMP_PATCH void func_global_asm_805FE544(u8 arg0) {
         }
         D_global_asm_8076A058 = temp;
     } else {
-        temp = 6000;
+        temp = 12000;
         stored_temp = temp;
         recomp_adjust_dl_allocation(&temp);
         if (stored_temp > temp) {
