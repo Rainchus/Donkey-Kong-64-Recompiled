@@ -47,7 +47,7 @@ RECOMP_PATCH void func_global_asm_80627C5C(u8 arg0, s16 arg1, u8 arg2) {
             var_s0 = (u8*)"EVERYTHING IS MOVING AT 200 FRAMES PER SECOND";
             break;
         case 38:
-            var_s0 = (u8*)"OBJECTS LOADED FROM A MILE AWAY";
+            var_s0 = (u8*)"THEY COULD EVEN TAG KONGS WITHOUT A TAG BARREL";
             break;
         case 39:
             var_s0 = (u8*)"THEY JUST RELEASED THE DK64 RECOMP!!!";
