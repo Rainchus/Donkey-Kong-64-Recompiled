@@ -510,3 +510,125 @@ RECOMP_PATCH void func_global_asm_80727958(void) {
         var_s0++;
     }
 }
+
+typedef struct {
+    void *unk0; // Used
+    void *unk4;
+    u8 unk8; // Used
+    u8 unk9;
+    u8 unkA;
+    u8 unkB;
+} Struct807FA8A0;
+
+s32 delayed_decompression_count = 0;
+Struct807FA8A0 delayed_decompression_array[DECOMPRESSION_BUFFER_SIZE] = {};
+OSIoMesg unk_decompression_array[DECOMPRESSION_BUFFER_SIZE] = {};
+OSMesg decompression_mq[DECOMPRESSION_BUFFER_SIZE];
+
+void func_global_asm_8066AEE4(void *arg0, void *arg1);
+void _free(void *ptr);
+extern void *D_global_asm_80748E14;
+extern s8 D_global_asm_80746834;
+extern OSMesgQueue D_global_asm_807656D0;
+
+RECOMP_PATCH void func_global_asm_8066AF40(void) {
+    s32 i;
+
+    for (i = 0; i < delayed_decompression_count; i++) {
+        D_global_asm_80746834 = 7;
+        osRecvMesg(&D_global_asm_807656D0, NULL, 1);
+        D_global_asm_80746834 = 0;
+        if (delayed_decompression_array[i].unk8 != 0) {
+            func_global_asm_8066AEE4(delayed_decompression_array[i].unk0, delayed_decompression_array[i].unk4);
+        }
+    }
+    if (D_global_asm_80748E14 != NULL) {
+        _free(D_global_asm_80748E14);
+        D_global_asm_80748E14 = NULL;
+    }
+    delayed_decompression_count = 0;
+}
+
+s32 func_global_asm_8066B4D4(s32 arg0, s32 arg1, u32 *arg2, s32 *arg3);
+void *func_global_asm_8066B5C8(s32 pointerTableIndex, s32 fileIndex);
+void func_global_asm_8066B5F4(s32 pointerTableIndex);
+void func_global_asm_8066B8C8(void *arg0, s32 pointerTableIndex, s32 arg2);
+void *func_global_asm_806111BC(s32 arg0, s32 arg1);
+void func_global_asm_8060B140(u32 arg0, u8 *arg1, s32 *arg2, u8 arg3, u8 arg4, u8 arg5, u8 *arg6);
+void raiseException(u8 arg0, s32 arg1, s32 arg2, s32 arg3);
+void func_global_asm_8066B4AC(s32 arg0, s32 arg1, void *arg2);
+extern u8 D_global_asm_80748E18[];
+extern s32 *D_global_asm_807FB1A0[];
+extern s32 D_global_asm_807F9678;
+extern u8 D_global_asm_807F967C;
+
+RECOMP_PATCH void *getPointerTableFile(enum pointertable_e pointerTableIndex, u32 fileIndex, u8 arg2, u8 arg3) {
+    s32 temp;
+    u32 sp50;
+    s32 sp4C;
+    void *var_v0;
+    s32 var_a1;
+    void *sp40;
+
+    func_global_asm_8066B5F4(pointerTableIndex);
+    if (!arg3) {
+        if ((fileIndex >= 0x80000000) && (fileIndex < 0xA0000000)) {
+            func_global_asm_8066B8C8((void*)fileIndex, pointerTableIndex, 0);
+            D_global_asm_807F967C = 0;
+            D_global_asm_807F9678 = 0;
+            return (void*)fileIndex;
+        }
+        var_v0 = func_global_asm_8066B5C8(pointerTableIndex, fileIndex);
+        if (var_v0 != NULL) {
+            func_global_asm_8066B8C8(var_v0, pointerTableIndex, fileIndex);
+            D_global_asm_807F967C = 0;
+            D_global_asm_807F9678 = 0;
+            return var_v0;
+        }
+    }
+    func_global_asm_8066B4D4(pointerTableIndex, fileIndex, &sp50, &sp4C);
+    if (sp4C == 0) {
+        D_global_asm_807F967C = 0;
+        D_global_asm_807F9678 = 0;
+        return NULL;
+    }
+    if (D_global_asm_80748E18[pointerTableIndex] != 0) {
+        var_a1 = D_global_asm_807FB1A0[pointerTableIndex][fileIndex];
+    } else {
+        var_a1 = sp4C;
+    }
+    if (D_global_asm_807F9678 == 0) {
+        var_v0 = _malloc(var_a1);
+    } else {
+        var_v0 = func_global_asm_806111BC(D_global_asm_807F9678, var_a1);
+    }
+    if (arg2 != 0) {
+        if (D_global_asm_80748E18[pointerTableIndex] != 0) {
+            sp40 = _malloc(sp4C);
+            func_global_asm_8060B140(sp50, sp40, &sp4C, 0, 0, 0, 0);
+            func_global_asm_8066AEE4(sp40, var_v0);
+        } else {
+            func_global_asm_8060B140(sp50, var_v0, &sp4C, 0, 0, 0, 0);
+        }
+    } else {
+        if (delayed_decompression_count == DECOMPRESSION_BUFFER_SIZE) {
+            raiseException(6, 0, 0, 0);
+        }
+        delayed_decompression_array[delayed_decompression_count].unk8 = D_global_asm_80748E18[pointerTableIndex];
+        if (D_global_asm_80748E18[pointerTableIndex] != 0) {
+            delayed_decompression_array[delayed_decompression_count].unk0 = _malloc(sp4C);
+            delayed_decompression_array[delayed_decompression_count].unk4 = var_v0;
+        } else {
+            delayed_decompression_array[delayed_decompression_count].unk4 = var_v0;
+            delayed_decompression_array[delayed_decompression_count].unk0 = var_v0;
+        }
+        osInvalDCache(delayed_decompression_array[delayed_decompression_count].unk0, sp4C);
+        osPiStartDma(&unk_decompression_array[delayed_decompression_count], 0, 0, sp50, delayed_decompression_array[delayed_decompression_count].unk0, sp4C, &D_global_asm_807656D0);
+        delayed_decompression_count++;
+    }
+    func_global_asm_8066B4AC(pointerTableIndex, fileIndex, var_v0);
+    func_global_asm_8066B8C8(var_v0, pointerTableIndex, fileIndex);
+    D_global_asm_807F967C = 0;
+    D_global_asm_807F9678 = 0;
+    return var_v0;
+}

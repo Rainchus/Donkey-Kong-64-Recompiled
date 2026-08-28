@@ -1,6 +1,6 @@
 #include "common_structs.h"
 
-#define DEBUG_INFO 1
+#define DEBUG_INFO 0
 
 extern u8 D_global_asm_807FF01C;
 extern s32 D_global_asm_807FF020;
@@ -70,16 +70,21 @@ extern HeapArenaMeta D_global_asm_807F0988[5];
 f32 getHeapFill(void) {
     s32 total_capacity;
     s32 total_size;
+    s32 start, end;
     s32 i;
     HeapStruct *addr;
 
     total_size = 0;
-    total_capacity = (0x805FAE00 - 0x25800) - ((s32)D_global_asm_80744470[1] + 0x25800);
+    start = (s32)D_global_asm_80744470[1] + 0x25800;
+    end = 0x805FAE00 - 0x25800;
+    total_capacity = end - start;
     for (i = 0; i < 5; i++) {
-        addr = D_global_asm_807F0988[i].start;
+        addr = D_global_asm_807F0988[i].tail;
         while (addr) {
-            total_size += addr->size;
-            addr = addr->next;
+            if (addr >= start && addr <= end) {
+                total_size += addr->size;
+            }
+            addr = addr->prev;
         }
     }
     return (f32)(100.0f * total_size) / (f32)total_capacity;

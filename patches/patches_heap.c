@@ -109,7 +109,7 @@ void func_global_asm_80601A10(SynthConfig *, s32, Struct80600D50_sp60 *);
 void func_global_asm_80732DEC(SeqpConfig *, s32);
 void func_global_asm_80732F10(ALSeqPlayer *, SeqpConfig *);
 void func_global_asm_80735AA0(UnkConfig *);
-void func_global_asm_80611408(void *ptr);
+void _free(void *ptr);
 void func_global_asm_8060B140(u32 arg0, void *arg1, s32 *arg2, u8 arg3, u8 arg4, u8 arg5, u8 *arg6);
 void func_global_asm_80735A50(ALSeqPlayer *arg0, ALBank *arg1);
 void func_global_asm_806010A0(void);
@@ -164,7 +164,7 @@ RECOMP_PATCH void func_global_asm_80600D50(void) {
     D_global_asm_8076D1FC = temp_v0_2->bankArray[0];
     spC0 = gOverlayTable[16].rom_data_end - gOverlayTable[16].rom_code_start;
     func_global_asm_8060B140(gOverlayTable[16].rom_code_start, temp_v0, &spC0, 0xD, 0, 2, 0);
-    func_global_asm_80611408(temp_v0);
+    _free(temp_v0);
     temp_v0_3 = alHeapDBAlloc(NULL, 0, &D_global_asm_8076D1E8, 1, spC0);
     func_global_asm_8060B140(gOverlayTable[16].rom_code_start, temp_v0_3, &spC0, 0xD, 0, 2, 0);
     alBnkfNew(temp_v0_3, (u8*)gOverlayTable[17].rom_code_start);
@@ -741,4 +741,24 @@ RECOMP_PATCH void func_global_asm_80699284(void) {
     guTranslateF(gCurrentActorPointer->unkC, 0.0f, -70.0f, 0.0f);
     renderActor(gCurrentActorPointer, 1);
     addActorToTextOverlayRenderArray(func_global_asm_80699128, gCurrentActorPointer, 3);
+}
+
+typedef struct {
+    void *unk0; // Used
+    s8 unk4; // Used
+    s8 unk5;
+    s8 unk6;
+    s8 unk7;
+} Struct807F0A58;
+void func_global_asm_80611730(void);
+extern Struct807F0A58 D_global_asm_807F0A58[];
+
+RECOMP_PATCH void func_global_asm_8061138C(void *arg0) {
+    while (D_global_asm_807F5A58 >= 0xA00) {
+        recomp_printf("Exceeded defer budget: %d\n", D_global_asm_807F5A58);
+        func_global_asm_80611730();
+    }
+    D_global_asm_807F0A58[D_global_asm_807F5A58].unk0 = arg0;
+    D_global_asm_807F0A58[D_global_asm_807F5A58].unk4 = D_global_asm_807F5A5C;
+    D_global_asm_807F5A58++;
 }

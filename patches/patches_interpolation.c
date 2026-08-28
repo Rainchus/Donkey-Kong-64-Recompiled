@@ -924,7 +924,7 @@ void func_global_asm_8072334C(s32 arg0, u8 arg1);
 void playActorAnimation(Actor *arg0, s32 arg1);
 void func_global_asm_80614D00(Actor *arg0, f32 arg1, f32 arg2);
 void func_global_asm_806BFA8C(u16 arg0);
-void func_global_asm_80611408(void *ptr);
+void _free(void *ptr);
 extern void *_malloc(s32);
 void func_global_asm_807248B0(Actor *arg0, f32 arg1);
 Actor *getSpawnerTiedActor(s16 spawn_trigger, u16 arg1);
@@ -1056,7 +1056,7 @@ RECOMP_PATCH void func_global_asm_806BFBF4(void) {
                 gCurrentActorPointer->control_state = 2;
                 gCurrentActorPointer->control_state_progress = 0;
                 if (D_global_asm_807FDC98->unk20 != NULL) {
-                    func_global_asm_80611408(D_global_asm_807FDC98->unk20);
+                    _free(D_global_asm_807FDC98->unk20);
                 }
                 D_global_asm_807FDC9C->unk11 = 1;
                 D_global_asm_807FDC98->unk20 = _malloc(2);

@@ -7,6 +7,7 @@
 #include "enums.h"
 
 extern u8 queue_dk64_fb_store;
+#define DECOMPRESSION_BUFFER_SIZE 0x400
 
 typedef struct tuple_f {
     union {

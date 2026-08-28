@@ -342,11 +342,13 @@ RECOMP_PATCH void func_global_asm_805FB944(u8 arg0) {
     gScissor2LowerRightY = D_global_asm_8074450C * 240; //height   
 }
 
+extern OSMesg decompression_mq[];
+
 RECOMP_PATCH void func_global_asm_805FBC5C(void) {
     UnkMQStruct* mq;
     D_global_asm_8076A084 = gOverlayTable[12].rom_data_end - gOverlayTable[12].rom_code_start;
     osCreateMesgQueue(&D_global_asm_807655F0.mq, &D_global_asm_807655F0.msgs[0], 0x32);
-    osCreateMesgQueue(&D_global_asm_807656D0.mq, &D_global_asm_807656D0.msgs[0], 0xC0);
+    osCreateMesgQueue(&D_global_asm_807656D0.mq, &decompression_mq[0], DECOMPRESSION_BUFFER_SIZE);
     func_global_asm_8060EC80(
         &D_global_asm_80767A40.queue,
         &D_global_asm_80767A40,

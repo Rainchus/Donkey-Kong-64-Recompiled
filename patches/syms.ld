@@ -69,3 +69,4 @@ recomp_get_swimming_inverted_axes = 0x8F000134;
 recomp_get_first_person_inverted_axes = 0x8F000138;
 recomp_get_mp_enabled = 0x8F00013C;
 recomp_get_draw_distance = 0x8F000140;
+osPiStartDma_recomp = 0x8F000144;
