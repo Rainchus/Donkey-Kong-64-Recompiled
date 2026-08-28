@@ -7,6 +7,7 @@
 #include "enums.h"
 
 extern u8 queue_dk64_fb_store;
+#define DECOMPRESSION_BUFFER_SIZE 0x400
 
 typedef struct tuple_f {
     union {
@@ -1265,8 +1266,7 @@ struct actor {
         u16 unk146; // used (0x147 hand state? 0x146 seems to be u16)
         s16 unk146_s16; // used func_global_asm_8068A764
     };
-    void* unk148; // Used
-    void* unk14C; // Used
+    void* unk148[2]; // Used
     FloorTriangle* unk150;
     u8 control_state; // at 0x154
     u8 control_state_progress; // at 0x155
@@ -1968,6 +1968,59 @@ struct Struct80717D84 {
     Struct80717D84 *unk39C;
 };
 
+
+typedef struct ActorSpawner ActorSpawner;
+
+struct ActorSpawner {
+    s16 actor_type; // At 0x0
+    u16 unk2;
+    f32 x_position; // At 0x4
+    f32 y_position; // At 0x8
+    f32 z_position; // At 0xC
+    f32 unk10;
+    f32 unk14;
+    f32 unk18;
+    s16 y_rotation; // At 0x1C
+    u16 unk1E;
+    f32 unk20; // At 0x20, Used
+    u8 pad24[0x32 - 0x24];
+    s16 unk32;
+    u8 pad34[0x44 - 0x34];
+    Actor* tied_actor; // At 0x44
+    u8 unk48; // Used
+    u8 unk49;
+    s16 unk4A;
+    u8 unk4C; // Used
+    u8 unk4D;
+    Actor *unk50;
+    f32 unk54;
+    s16 unk58;
+    s16 id; // At 0x5A
+    s32 (*unk5C)(s32); // At 0x5C
+    s32 (*drawing_code)(s32); // At 0x60
+    ActorSpawner* previous_spawner; // At 0x64
+    ActorSpawner* next_spawner; // At 0x68
+    u8 pad6C[0x80 - 0x6C];
+};
+
+typedef struct {
+    u16 unk0;
+    u16 unk2;
+    s32 unk4;
+    s32 unk8;
+    s16 unkC;
+    u8 unkE;
+    u8 unkF;
+    s32 unk10;
+    u8 unk14;
+    u8 unk15;
+    u8 unk16;
+    u8 unk17;
+} Struct8075EB80;
+
+extern Struct8075EB80 D_global_asm_8075EB80[];
+
+// TODO: Use that clever tuple thing from BKomp
 typedef struct {
     s16 coords_0[3]; // 0x0
     s16 coords_1[3]; // 0x6
@@ -2057,7 +2110,7 @@ typedef struct {
 
     // TODO: proper bitfield syntax
 	u16 properties_bitfield; // = 0x46 bitfield -- TODO: Document this, find where this comes from so we can display stuff pre-load
-} EnemySpawner;
+} EnemySpawner; // 807FDC8C pointer to array of structs, count at 807FDC88
 
 typedef struct {
     u8 pad0[0x2 - 0x0];

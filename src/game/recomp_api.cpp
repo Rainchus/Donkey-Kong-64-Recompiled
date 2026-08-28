@@ -8,6 +8,7 @@
 #include "recompui/recompui.h"
 #include "recompui/renderer.h"
 #include "donk_sound.h"
+#include "donk_draw.h"
 #include "librecomp/helpers.hpp"
 #include "../patches/input.h"
 #include "../patches/graphics.h"
@@ -109,6 +110,10 @@ extern "C" void recomp_get_bgm_volume(uint8_t* rdram, recomp_context* ctx) {
 
 extern "C" void recomp_get_sfx_volume(uint8_t* rdram, recomp_context* ctx) {
     _return(ctx, dk64::get_sfx_volume() / 2.5f);
+}
+
+extern "C" void recomp_get_draw_distance(uint8_t* rdram, recomp_context* ctx) {
+    _return(ctx, dk64::get_draw_distance() * 50.0f);
 }
 
 extern "C" void recomp_get_story_skip(uint8_t* rdram, recomp_context* ctx) {

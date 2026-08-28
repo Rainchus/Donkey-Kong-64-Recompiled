@@ -45,7 +45,7 @@
 #define osWritebackDCacheAll osWritebackDCacheAll_recomp
 #define osAiSetNextBuffer osAiSetNextBuffer_recomp
 #define _sqrtf sqrtf_recomp
-
+#define osPiStartDma osPiStartDma_recomp
 
 #define sinf __sinf_recomp
 #define cosf __cosf_recomp
