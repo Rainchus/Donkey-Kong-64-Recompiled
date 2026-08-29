@@ -17,16 +17,10 @@
       <stop offset="0%" stop-color="#8f280b" />
       <stop offset="100%" stop-color="#f94e1b" />
     </linearGradient>
-    <!-- Filter that creates a unified outer border -->
     <filter id="banana-outline" x="-20%" y="-20%" width="140%" height="140%">
-      <!-- 1. Expand the combined shapes to create the border thickness -->
       <feMorphology in="SourceAlpha" result="expanded" operator="dilate" radius="8" />
-      
-      <!-- 2. Color the expanded area (change flood-color to your outline color) -->
       <feFlood flood-color="#000000" result="outlineColor" />
       <feComposite in="outlineColor" in2="expanded" operator="in" result="outline" />
-      
-      <!-- 3. Layer the original banana over the generated outline -->
       <feMerge>
         <feMergeNode in="outline" />
         <feMergeNode in="SourceGraphic" />
