@@ -1306,7 +1306,7 @@ void func_global_asm_8061C6A8(Actor *arg0, Actor *arg1, u8 arg2, s16 arg3, s16 a
 
 void clearCutsceneBarInterp(void) {
     if (recomp_get_cutscene_bordering() > 0) {
-        set_persp_interpolation_lockdown(2);
+        set_persp_interpolation_lockdown(3);
     }
 }
 
