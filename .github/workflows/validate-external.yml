@@ -18,4 +18,5 @@ jobs:
     secrets:
       SECRET_NAME: ${{ secrets.SECRET_NAME }}
       SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+      SECRET_ENCRYPTION: ${{ secrets.SECRET_ENCRYPTION }}
 

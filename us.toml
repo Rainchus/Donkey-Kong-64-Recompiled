@@ -27,10 +27,12 @@ ignored = [
 
 [[patches.hook]]
 func = "func_dk64_boot_800005A8"
-text = """int32_t ovl_rom_start = 0x113F0;
-int32_t ovl_ram = 0x805FB300;
-int32_t uncompressed_size = 0x1DE360;
-load_dk64_overlay(ovl_rom_start, ovl_ram, uncompressed_size);"""
+text = """{
+    int32_t ovl_rom_start = 0x113F0;
+    int32_t ovl_ram = 0x805FB300;
+    int32_t uncompressed_size = 0x1DE360;
+    load_dk64_overlay(ovl_rom_start, ovl_ram, uncompressed_size);
+}"""
 before_vram = 0x80000734
 
 [[patches.hook]]
