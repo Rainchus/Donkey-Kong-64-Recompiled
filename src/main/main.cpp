@@ -125,7 +125,7 @@ std::unique_ptr<ultramodern::renderer::RendererContext> create_pacing_render_con
 
 #include "../../lib/rt64/src/contrib/stb/stb_image.h"
 
-const std::string version_string = "1.0.1";
+const std::string version_string = "1.0.2";
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
