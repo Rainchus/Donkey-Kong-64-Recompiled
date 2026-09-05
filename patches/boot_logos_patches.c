@@ -1,6 +1,7 @@
 #include "common_structs.h"
 #include "options.h"
 #include "patches_main.h"
+#include "ui_funcs.h"
 
 Gfx gfxArena[0x200];
 u8 redNintendoLogoTexture[320 * 240 * 2];
@@ -305,7 +306,8 @@ RECOMP_PATCH void func_global_asm_805FBFF4(s32 arg0) {
 
         // @recomp: Fire per-frame event.
         dk64recomp_every_frame();
-
+        // @recomp Run Ui Callbacks
+        recomp_run_ui_callbacks();
         if (D_global_asm_8076A0B1 & 1 && !D_global_asm_8076A0B2) {
             func_global_asm_805FE7FC();
             clear_actor_interpolation_lockdowns();  // @recomp: flush actor interp lockdowns to prevent it getting clogged with stale references

@@ -119,4 +119,8 @@ int recomp_printf(const char* fmt, ...);
 void recomp_crash(const char* err);
 extern void AlterVolumes(void);
 
+#define true 1
+#define false 0
+
+typedef _Bool bool;
 #endif
