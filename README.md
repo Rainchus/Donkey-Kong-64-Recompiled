@@ -112,4 +112,5 @@ Building is not required to play this project, as prebuilt binaries (which do no
 * [Donkey Kong 64 Decompilation](https://gitlab.com/dk64_decomp/dk64) for headers and some function definitions, used for making patches or some enhancements
 * [Ares emulator](https://github.com/ares-emulator/ares) for RSP vector instruction reference implementations, used in RSP recompilation
 
-Special thanks to [thecozies](https://github.com/thecozies) for designing and helping implement the launcher and config menus!
+Special thanks to [thecozies](https://github.com/thecozies) for designing and helping implement the launcher and config menus!<br/>
+Also special thanks to [fewffwa](https://github.com/fewffwa) for testing multiple in development builds and bug reporting.
