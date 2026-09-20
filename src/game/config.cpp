@@ -44,10 +44,24 @@ static void add_general_options(recomp::config::Config &config) {
     };
     config.add_enum_option(
         dk64::configkeys::general::first_person_invert_mode,
-        "Invert First Person View",
-        "Inverts the camera controls in first person view. <recomp-color primary>Invert Y</recomp-color> is the default and matches the original game.",
+        "Invert First Person Stick",
+        "Inverts the analog stick in first person view. <recomp-color primary>Invert Y</recomp-color> is the default and matches the original game.",
         first_person_invert_mode_options,
         dk64::CameraInvertMode::InvertY
+    );
+    config.add_enum_option(
+        dk64::configkeys::general::first_person_gyro_invert_mode,
+        "Invert First Person Gyro",
+        "Inverts motion controls in first person view, independently of the stick. <recomp-color primary>None</recomp-color> matches the physical direction the controller is turned.",
+        first_person_invert_mode_options,
+        dk64::CameraInvertMode::InvertNone
+    );
+    config.add_enum_option(
+        dk64::configkeys::general::first_person_mouse_invert_mode,
+        "Invert First Person Mouse",
+        "Inverts mouse aiming in first person view, independently of the stick. <recomp-color primary>None</recomp-color> is standard mouse look: moving the mouse away from you aims upwards.",
+        first_person_invert_mode_options,
+        dk64::CameraInvertMode::InvertNone
     );
     static EnumOptionVector swimming_invert_options = {
         {dk64::CameraInvertMode::InvertNone, "InvertNone", "None"},
@@ -154,6 +168,14 @@ dk64::LightningFlashMode dk64::get_lightning_flash() {
 
 dk64::CameraInvertMode dk64::get_first_person_invert_mode() {
     return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::first_person_invert_mode);
+}
+
+dk64::CameraInvertMode dk64::get_first_person_gyro_invert_mode() {
+    return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::first_person_gyro_invert_mode);
+}
+
+dk64::CameraInvertMode dk64::get_first_person_mouse_invert_mode() {
+    return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::first_person_mouse_invert_mode);
 }
 
 uint32_t dk64::get_analog_cam_sensitivity() {

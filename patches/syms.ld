@@ -76,3 +76,5 @@ osEepromProbe_recomp = 0x8F000148;
 osCreateThread_recomp = 0x8F00014C;
 osStartThread_recomp = 0x8F000150;
 recomp_run_ui_callbacks = 0x8F000154;
+recomp_get_first_person_gyro_inverted_axes = 0x8F000158;
+recomp_get_first_person_mouse_inverted_axes = 0x8F00015C;

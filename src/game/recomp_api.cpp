@@ -307,6 +307,26 @@ extern "C" void recomp_get_first_person_inverted_axes(uint8_t* rdram, recomp_con
     *y_out = (mode == dk64::CameraInvertMode::InvertY || mode == dk64::CameraInvertMode::InvertBoth);
 }
 
+extern "C" void recomp_get_first_person_gyro_inverted_axes(uint8_t* rdram, recomp_context* ctx) {
+    s32* x_out = _arg<0, s32*>(rdram, ctx);
+    s32* y_out = _arg<1, s32*>(rdram, ctx);
+
+    dk64::CameraInvertMode mode = dk64::get_first_person_gyro_invert_mode();
+
+    *x_out = (mode == dk64::CameraInvertMode::InvertX || mode == dk64::CameraInvertMode::InvertBoth);
+    *y_out = (mode == dk64::CameraInvertMode::InvertY || mode == dk64::CameraInvertMode::InvertBoth);
+}
+
+extern "C" void recomp_get_first_person_mouse_inverted_axes(uint8_t* rdram, recomp_context* ctx) {
+    s32* x_out = _arg<0, s32*>(rdram, ctx);
+    s32* y_out = _arg<1, s32*>(rdram, ctx);
+
+    dk64::CameraInvertMode mode = dk64::get_first_person_mouse_invert_mode();
+
+    *x_out = (mode == dk64::CameraInvertMode::InvertX || mode == dk64::CameraInvertMode::InvertBoth);
+    *y_out = (mode == dk64::CameraInvertMode::InvertY || mode == dk64::CameraInvertMode::InvertBoth);
+}
+
 extern "C" void recomp_get_right_analog_inputs(uint8_t* rdram, recomp_context* ctx) {
     float* x_out = _arg<0, float*>(rdram, ctx);
     float* y_out = _arg<1, float*>(rdram, ctx);

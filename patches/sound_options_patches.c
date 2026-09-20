@@ -684,30 +684,52 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
     s32 stick_x, stick_y;
     s32 invX = 0;
     s32 invY = 0;
+    s32 gyroInvX = 0;
+    s32 gyroInvY = 0;
+    s32 mouseInvX = 0;
+    s32 mouseInvY = 0;
     f32 dGyroX, dGyroY, dMouseX, dMouseY;
 
     if (!(extra_player_info_pointer->unk1F0 & 0x8000)) {
         stick_x = D_global_asm_807FD610[cc_player_index].unk2E;
         stick_y = D_global_asm_807FD610[cc_player_index].unk2F;
+        // Stick, gyro and mouse each carry their own inversion setting, because the
+        // three want opposite signs by default and a single shared setting could never
+        // satisfy more than one of them at a time.
         recomp_get_first_person_inverted_axes(&invX, &invY);
+        recomp_get_first_person_gyro_inverted_axes(&gyroInvX, &gyroInvY);
+        recomp_get_first_person_mouse_inverted_axes(&mouseInvX, &mouseInvY);
         recomp_get_mouse_deltas(&dMouseX, &dMouseY);
+        // recomp_get_gyro_deltas(x, y) reports rotation ABOUT each axis: x is pitch,
+        // y is yaw. The arguments are crossed here to convert that into screen axes.
         recomp_get_gyro_deltas(&dGyroY, &dGyroX);
+
+        // A positive stick_y rotates the view towards the floor. The stick's setting
+        // defaults to Invert Y because the original game aims up when pulled down;
+        // negating a zero stick leaves it zero, so the == 0 tests below still hold.
+        if (invX) stick_x = -stick_x;
+        if (!invY) stick_y = -stick_y;
+
         if (stick_x == 0) {
             if (dGyroX != 0.0f) {
-                stick_x = dGyroX;
+                // Yaw is reported with the opposite sign to the stick's X axis.
+                stick_x = -dGyroX;
+                if (gyroInvX) stick_x = -stick_x;
             } else if (dMouseX != 0.0f) {
                 stick_x = dMouseX;
+                if (mouseInvX) stick_x = -stick_x;
             }
         }
         if (stick_y == 0) {
             if (dGyroY != 0.0f) {
                 stick_y = -dGyroY;
+                if (gyroInvY) stick_y = -stick_y;
             } else if (dMouseY != 0.0f) {
+                // Standard mouse look: pushing the mouse away aims upward.
                 stick_y = dMouseY;
+                if (mouseInvY) stick_y = -stick_y;
             }
         }
-        if (invX) stick_x = -stick_x;
-        if (!invY) stick_y = -stick_y;
         temp_a0 = extra_player_info_pointer->unk104->additional_actor_data;
         temp_v1 = &temp_a0->unkB2;
         *temp_v1 -= (stick_x * 0.08 * func_global_asm_806EA2D8() * 4096.0) / 360.0;
