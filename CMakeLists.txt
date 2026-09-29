@@ -75,6 +75,7 @@ target_compile_options(RecompiledFuncs PRIVATE
     -fno-strict-aliasing
     -Wno-unused-variable
     -Wno-implicit-function-declaration
+    -falign-functions=16
 )
 
 target_include_directories(RecompiledFuncs PRIVATE
@@ -97,6 +98,7 @@ target_compile_options(PatchesLib PRIVATE
     -fno-strict-aliasing
     -Wno-unused-variable
     -Wno-implicit-function-declaration
+    -falign-functions=16
 )
 
 target_include_directories(PatchesLib PRIVATE
