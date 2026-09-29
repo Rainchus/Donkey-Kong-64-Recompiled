@@ -49,6 +49,19 @@ static void add_general_options(recomp::config::Config &config) {
         first_person_invert_mode_options,
         dk64::CameraInvertMode::InvertY
     );
+    static EnumOptionVector gyro_invert_mode_options = {
+        {dk64::CameraInvertMode::InvertNone, "InvertNone", "None"},
+        {dk64::CameraInvertMode::InvertX, "InvertX", "Invert X"},
+        {dk64::CameraInvertMode::InvertY, "InvertY", "Invert Y"},
+        {dk64::CameraInvertMode::InvertBoth, "InvertBoth", "Invert Both"}
+    };
+    config.add_enum_option(
+        dk64::configkeys::general::gyro_invert_mode,
+        "Invert Gyro",
+        "Inverts gyro controls.",
+        gyro_invert_mode_options,
+        dk64::CameraInvertMode::InvertY
+    );
     static EnumOptionVector swimming_invert_options = {
         {dk64::CameraInvertMode::InvertNone, "InvertNone", "None"},
         {dk64::CameraInvertMode::InvertX, "InvertX", "Invert X"},
@@ -110,8 +123,8 @@ static void add_general_options(recomp::config::Config &config) {
     };
     config.add_enum_option(
         dk64::configkeys::general::lightning_flashes,
-        "Lightning Flash Intensity",
-        "Changes the intensity of lightning flashes within the game.<br /><recomp-color primary>Vanilla</recomp-color>: Lightning flashes at 100% intensity<br /><recomp-color primary>Reduced</recomp-color>: Lightning flashes at 60% intensity<br /><recomp-color primary>Off</recomp-color>: Lightning flashes are completely disabled",
+        "Lightning Flash Frequency",
+        "Changes the frequency of lightning flashes within the game.<br /><recomp-color primary>Vanilla</recomp-color>: Lightning flashes at vanilla frequency<br /><recomp-color primary>Reduced</recomp-color>: Lightning flashes at 10x as less<br /><recomp-color primary>Off</recomp-color>: Lightning flashes are completely disabled",
         lightning_flash_options,
         dk64::LightningFlashMode::Reduced
     );
@@ -154,6 +167,10 @@ dk64::LightningFlashMode dk64::get_lightning_flash() {
 
 dk64::CameraInvertMode dk64::get_first_person_invert_mode() {
     return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::first_person_invert_mode);
+}
+
+dk64::CameraInvertMode dk64::get_gyro_invert_mode() {
+    return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::gyro_invert_mode);
 }
 
 uint32_t dk64::get_analog_cam_sensitivity() {

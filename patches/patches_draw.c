@@ -23,6 +23,7 @@ u16 valid_actors[] = {
     ACTOR_KRUSHA,
     ACTOR_RAMBI,
     ACTOR_ENGUARDE,
+    ACTOR_UNKNOWN_141, // Used for puppets
     ACTOR_CANNON_BARREL,
     ACTOR_RAMBI_CRATE,
     ACTOR_CANNON,
@@ -105,6 +106,12 @@ f32 actorDrawFilter(Actor *actor) {
     u32 i;
 
     actor_type = actor->unk58;
+    if (actor->interactable & 1) {
+        // Player
+        if (current_map == MAP_ROCK_INTRO_STORY) { // Fixes a bug where the player is visible during intro story
+            return 0.0f;
+        }
+    }
     for (i = 0; i < (sizeof(valid_actors) >> 1); i++) {
         if (actor_type == valid_actors[i]) {
             return 1.0f;
@@ -796,4 +803,38 @@ RECOMP_PATCH void *getPointerTableFile(enum pointertable_e pointerTableIndex, u3
     D_global_asm_807F967C = 0;
     D_global_asm_807F9678 = 0;
     return var_v0;
+}
+
+// @recomp: Used for some sprite draws, namely balloons
+RECOMP_PATCH void func_global_asm_8071EB70(Struct80717D84 *arg0, s32 arg1) {
+    f32 *var_v1;
+    f32 d;
+    f32 temp_f16;
+    f32 dz;
+    f32 dx;
+    f32 dy;
+    s32 var_f12; // Amazingly this is correct
+    s32 unk35c_copy;
+
+    unk35c_copy = recomp_filter_draw(arg0->unk35C, 1.0f); // @recomp: Pass a filter on the draw distance here. We apply this to the 35c variable rather than the 75% output to maintain fading
+    temp_f16 = (unk35c_copy * 3) / 4;
+    if (arg0->unk384 == NULL) {
+        arg0->unk384 = _malloc(4);
+        var_v1 = arg0->unk384;
+        *var_v1 = arg0->unk36D;
+    }
+    var_v1 = arg0->unk384;
+    dx = character_change_array->unk224 - arg0->unk348;
+    dy = character_change_array->unk21C - arg0->unk340;
+    dz = character_change_array->unk220 - arg0->unk344;
+    d = _sqrtf(SQ(dx) + (SQ(dy) + SQ(dz)));
+    if (d < temp_f16) {
+        arg0->unk36D = *var_v1;
+        return;
+    }
+    var_f12 = (*var_v1 * ((d - temp_f16) / (unk35c_copy - temp_f16)));
+    if (*var_v1 < var_f12) {
+        var_f12 = *var_v1;
+    }
+    arg0->unk36D = *var_v1 - var_f12;
 }

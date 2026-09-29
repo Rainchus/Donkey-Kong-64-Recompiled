@@ -147,16 +147,16 @@ extern "C" void recomp_get_camera_type(uint8_t* rdram, recomp_context* ctx) {
     }
 }
 
-extern "C" void recomp_get_lightning_intensity(uint8_t* rdram, recomp_context* ctx) {
+extern "C" void recomp_get_lightning_frequency(uint8_t* rdram, recomp_context* ctx) {
     switch (dk64::get_lightning_flash()) {
         case dk64::LightningFlashMode::Off:
             _return(ctx, 0);
             return;
         case dk64::LightningFlashMode::Reduced:
-            _return(ctx, 0.6f);
+            _return(ctx, 10);
             return;
         case dk64::LightningFlashMode::Vanilla:
-            _return(ctx, 1.0f);
+            _return(ctx, 1);
             return;
     }
 }
@@ -302,6 +302,16 @@ extern "C" void recomp_get_first_person_inverted_axes(uint8_t* rdram, recomp_con
     s32* y_out = _arg<1, s32*>(rdram, ctx);
 
     dk64::CameraInvertMode mode = dk64::get_first_person_invert_mode();
+
+    *x_out = (mode == dk64::CameraInvertMode::InvertX || mode == dk64::CameraInvertMode::InvertBoth);
+    *y_out = (mode == dk64::CameraInvertMode::InvertY || mode == dk64::CameraInvertMode::InvertBoth);
+}
+
+extern "C" void recomp_get_gyro_inverted_axes(uint8_t* rdram, recomp_context* ctx) {
+    s32* x_out = _arg<0, s32*>(rdram, ctx);
+    s32* y_out = _arg<1, s32*>(rdram, ctx);
+
+    dk64::CameraInvertMode mode = dk64::get_gyro_invert_mode();
 
     *x_out = (mode == dk64::CameraInvertMode::InvertX || mode == dk64::CameraInvertMode::InvertBoth);
     *y_out = (mode == dk64::CameraInvertMode::InvertY || mode == dk64::CameraInvertMode::InvertBoth);

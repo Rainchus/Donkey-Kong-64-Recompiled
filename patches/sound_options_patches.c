@@ -199,8 +199,29 @@ RECOMP_PATCH u8 func_global_asm_80621174(s32 arg0, PlayerAdditionalActorData *ar
 }
 
 extern Actor *gCurrentPlayer;
+const u8 default_scheme_maps[] = {
+    MAP_KROOL_BARREL_LANKY_MAZE,
+    MAP_MAD_MAZE_MAUL_HARD,
+    MAP_MAD_MAZE_MAUL_EASY,
+    MAP_MAD_MAZE_MAUL_NORMAL,
+    MAP_STASH_SNATCH_EASY,
+    MAP_STASH_SNATCH_NORMAL,
+    MAP_STASH_SNATCH_INSANE,
+    MAP_STEALTHY_SNOOP_VERY_EASY,
+    MAP_STEALTHY_SNOOP_EASY,
+    MAP_STEALTHY_SNOOP_NORMAL,
+    MAP_STEALTHY_SNOOP_HARD,
+};
 
 u8 analog_cam_enabled(void) {
+    // Whether to use the analog camera control scheme or otherwise
+    u32 i;
+    
+    for (i = 0; i < sizeof(default_scheme_maps); i++) {
+        if (current_map == (default_scheme_maps[i])) {
+            return FALSE;
+        }
+    }
     return recomp_get_camera_type() == 3;
 }
 
@@ -221,6 +242,7 @@ const u8 banned_analog_states[] = {
 };
 
 u8 get_analog_allowed(void) {
+    // When using the analog control scheme, whether the stick does anything
     u32 i;
 
     if (!analog_cam_enabled()) {
@@ -684,30 +706,43 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
     s32 stick_x, stick_y;
     s32 invX = 0;
     s32 invY = 0;
+    s32 invGyroX = 0;
+    s32 invGyroY = 0;
     f32 dGyroX, dGyroY, dMouseX, dMouseY;
 
     if (!(extra_player_info_pointer->unk1F0 & 0x8000)) {
         stick_x = D_global_asm_807FD610[cc_player_index].unk2E;
         stick_y = D_global_asm_807FD610[cc_player_index].unk2F;
         recomp_get_first_person_inverted_axes(&invX, &invY);
+        recomp_get_gyro_inverted_axes(&invGyroX, &invGyroY);
         recomp_get_mouse_deltas(&dMouseX, &dMouseY);
         recomp_get_gyro_deltas(&dGyroY, &dGyroX);
         if (stick_x == 0) {
             if (dGyroX != 0.0f) {
                 stick_x = dGyroX;
+                if (invGyroX) stick_x = -stick_x;
             } else if (dMouseX != 0.0f) {
                 stick_x = dMouseX;
+                if (invX) stick_x = -stick_x;
+            } else {
+                if (invX) stick_x = -stick_x;
             }
+        } else {
+            if (invX) stick_x = -stick_x;
         }
         if (stick_y == 0) {
             if (dGyroY != 0.0f) {
                 stick_y = -dGyroY;
+                if (invGyroY) stick_y = -stick_y;
             } else if (dMouseY != 0.0f) {
                 stick_y = dMouseY;
+                if (!invY) stick_y = -stick_y;
+            } else {
+                if (!invY) stick_y = -stick_y;
             }
+        } else {
+            if (!invY) stick_y = -stick_y;
         }
-        if (invX) stick_x = -stick_x;
-        if (!invY) stick_y = -stick_y;
         temp_a0 = extra_player_info_pointer->unk104->additional_actor_data;
         temp_v1 = &temp_a0->unkB2;
         *temp_v1 -= (stick_x * 0.08 * func_global_asm_806EA2D8() * 4096.0) / 360.0;
