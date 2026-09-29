@@ -918,3 +918,15 @@ RECOMP_PATCH void func_global_asm_80644EC8(s32 arg0, s32 arg1, s16 arg2, s16 arg
     }
 }
 
+extern f32 D_global_asm_807F6940;
+
+// @recomp: Aztec Sandstorm filter
+RECOMP_PATCH f32 func_global_asm_8065CFB8(s16 arg0, f32 arg1) {
+    f32 draw_filter_cap;
+    
+    draw_filter_cap = recomp_filter_draw(500.0f, 1.0f) + 100.0f;
+    if (arg0 == 0xB2 || arg0 == 0x253) {
+        arg1 += (draw_filter_cap - arg1) * D_global_asm_807F6940;
+    }
+    return arg1;
+}
