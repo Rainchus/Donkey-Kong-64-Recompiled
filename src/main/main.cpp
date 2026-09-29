@@ -802,6 +802,7 @@ int main(int argc, char** argv) {
     REGISTER_FUNC(recomp_get_swimming_inverted_axes);
     REGISTER_FUNC(recomp_get_first_person_inverted_axes);
     REGISTER_FUNC(recomp_get_gyro_inverted_axes);
+    REGISTER_FUNC(recomp_get_mouse_inverted_axes);
     recompui::register_ui_exports();
     recomputil::register_data_api_exports();
     recomptheme::set_custom_theme();

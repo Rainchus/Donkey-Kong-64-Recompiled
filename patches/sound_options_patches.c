@@ -708,6 +708,8 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
     s32 invY = 0;
     s32 invGyroX = 0;
     s32 invGyroY = 0;
+    s32 invMouseX = 0;
+    s32 invMouseY = 0;
     f32 dGyroX, dGyroY, dMouseX, dMouseY;
 
     if (!(extra_player_info_pointer->unk1F0 & 0x8000)) {
@@ -715,6 +717,7 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
         stick_y = D_global_asm_807FD610[cc_player_index].unk2F;
         recomp_get_first_person_inverted_axes(&invX, &invY);
         recomp_get_gyro_inverted_axes(&invGyroX, &invGyroY);
+        recomp_get_mouse_inverted_axes(&invMouseX, &invMouseY);
         recomp_get_mouse_deltas(&dMouseX, &dMouseY);
         recomp_get_gyro_deltas(&dGyroY, &dGyroX);
         if (stick_x == 0) {
@@ -723,7 +726,7 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
                 if (invGyroX) stick_x = -stick_x;
             } else if (dMouseX != 0.0f) {
                 stick_x = dMouseX;
-                if (invX) stick_x = -stick_x;
+                if (invMouseX) stick_x = -stick_x;
             } else {
                 if (invX) stick_x = -stick_x;
             }
@@ -736,7 +739,7 @@ RECOMP_PATCH void func_global_asm_806EA628(void) {
                 if (invGyroY) stick_y = -stick_y;
             } else if (dMouseY != 0.0f) {
                 stick_y = dMouseY;
-                if (!invY) stick_y = -stick_y;
+                if (!invMouseY) stick_y = -stick_y;
             } else {
                 if (!invY) stick_y = -stick_y;
             }

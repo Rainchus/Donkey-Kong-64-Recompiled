@@ -62,6 +62,20 @@ static void add_general_options(recomp::config::Config &config) {
         gyro_invert_mode_options,
         dk64::CameraInvertMode::InvertY
     );
+
+    static EnumOptionVector mouse_invert_mode_options = {
+        {dk64::CameraInvertMode::InvertNone, "InvertNone", "None"},
+        {dk64::CameraInvertMode::InvertX, "InvertX", "Invert X"},
+        {dk64::CameraInvertMode::InvertY, "InvertY", "Invert Y"},
+        {dk64::CameraInvertMode::InvertBoth, "InvertBoth", "Invert Both"}
+    };
+    config.add_enum_option(
+        dk64::configkeys::general::mouse_invert_mode,
+        "Invert Mouse",
+        "Inverts Mouse controls.",
+        mouse_invert_mode_options,
+        dk64::CameraInvertMode::InvertY
+    );
     static EnumOptionVector swimming_invert_options = {
         {dk64::CameraInvertMode::InvertNone, "InvertNone", "None"},
         {dk64::CameraInvertMode::InvertX, "InvertX", "Invert X"},
@@ -171,6 +185,10 @@ dk64::CameraInvertMode dk64::get_first_person_invert_mode() {
 
 dk64::CameraInvertMode dk64::get_gyro_invert_mode() {
     return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::gyro_invert_mode);
+}
+
+dk64::CameraInvertMode dk64::get_mouse_invert_mode() {
+    return get_general_config_enum_value<dk64::CameraInvertMode>(dk64::configkeys::general::mouse_invert_mode);
 }
 
 uint32_t dk64::get_analog_cam_sensitivity() {
