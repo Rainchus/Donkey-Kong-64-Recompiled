@@ -302,7 +302,7 @@ RECOMP_PATCH void func_global_asm_8068AD7C(void) {
             D_global_asm_807FC620 = 0;
         }
         if (TaaD->unk18) {
-            if ((TaaD->unk18 == 0x28) || (RandClamp(10) == 5)) {
+            if ((TaaD->unk18 == 0x28) || (RandClamp(10 * frequency) == 5)) {
                 if (frequency > 0) {
                     func_global_asm_80659670(1.0f, 1.0f, 1.0f, TaaD->unk1A);
                     if ((D_global_asm_80750190 == 0) && (TaaD->unk21 == 0)) {
