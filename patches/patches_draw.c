@@ -838,3 +838,83 @@ RECOMP_PATCH void func_global_asm_8071EB70(Struct80717D84 *arg0, s32 arg1) {
     }
     arg0->unk36D = *var_v1 - var_f12;
 }
+
+typedef struct {
+    f32 unk0;
+    f32 unk4;
+} Struct80645700_sp20;
+
+typedef struct {
+    union {
+        f32 unk0;
+        s32 unk0_s32;
+        s32 *unk0_s32_ptr;
+    };
+    union {
+        f32 unk4;
+        s32 unk4_s32;
+        s32 *unk4_s32_ptr;
+    };
+    union {
+        f32 unk8;
+        f32 *unk8_f32_ptr;
+    };
+} Struct807F5FD4_unk0;
+
+typedef struct {
+    Struct807F5FD4_unk0 *unk0[2];
+    s32 unk8;
+} Struct807F5FD4;
+
+typedef struct {
+    s32 id;
+    u8 images_per_frame_horizontal;
+    u8 images_per_frame_vertical;
+    u8 unk6;
+    u8 codec;
+    u8 unk8;
+    u8 unk9;
+    u8 unkA;
+    u8 unkB;
+    u8 unkC;
+    u8 table;
+    s16 width;
+    s16 height;
+    s16 image_count;
+    s16 images[1]; // TODO: How many elements? m2c doesn't support VLAs
+} SpriteData;
+extern Struct807F5FD4 *D_global_asm_807F5FD4;
+extern SpriteData D_global_asm_80720A7C;
+
+void func_global_asm_80714998(u8 arg0);
+void func_global_asm_807149B8(u8 arg0);
+void func_global_asm_80714950(s32 arg0);
+void func_global_asm_8071498C(void *arg0);
+void func_global_asm_8071AADC(Struct80717D84 *arg0, s32 arg1);
+void changeActorColor(u8 red, u8 green, u8 blue, u8 alpha);
+Struct80717D84 *drawSpriteAtPosition(void *sprite, f32 scale, f32 x, f32 y, f32 z);
+
+// @recomp: Galleon Sparkles draw code
+RECOMP_PATCH void func_global_asm_80644EC8(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+    u32 sp2C;
+
+    if (((func_global_asm_806119A0() / 10000U) % arg2) == 0) {
+        sp2C = (func_global_asm_806119A0() / 10000U) % arg3;
+        func_global_asm_80714998(2);
+        func_global_asm_807149B8(1); // @recomp: Can't display through walls
+        func_global_asm_80714950(0x10064);
+        func_global_asm_8071498C(func_global_asm_8071AADC);
+        changeActorColor(0xFF, 0xFF, 0xFF, 0xFF);
+        drawSpriteAtPosition(&D_global_asm_80720A7C, 1.2f, D_global_asm_807F5FD4->unk0[0][sp2C].unk0, D_global_asm_807F5FD4->unk0[0][sp2C].unk4, D_global_asm_807F5FD4->unk0[0][sp2C].unk8);
+    }
+    if (((func_global_asm_806119A0() / 10000U) % arg2) == 0) {
+        sp2C = (func_global_asm_806119A0() / 10000U) % arg3;
+        func_global_asm_80714998(2);
+        func_global_asm_807149B8(1); // @recomp: Can't display through walls
+        func_global_asm_80714950(0x10064);
+        func_global_asm_8071498C(func_global_asm_8071AADC);
+        changeActorColor(0xFF, 0xFF, 0xFF, 0xFF);
+        drawSpriteAtPosition(&D_global_asm_80720A7C, 1.2f, D_global_asm_807F5FD4->unk0[1][sp2C].unk0, D_global_asm_807F5FD4->unk0[1][sp2C].unk4, D_global_asm_807F5FD4->unk0[1][sp2C].unk8);
+    }
+}
+
