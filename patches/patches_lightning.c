@@ -298,7 +298,7 @@ RECOMP_PATCH void func_global_asm_8068AD7C(void) {
             TaaD->unk21--;
         }
         if (D_global_asm_807FC620) {
-            TaaD->unk18 = 0x28U * frequency;
+            TaaD->unk18 = MIN(0x28U * frequency, 255);
             D_global_asm_807FC620 = 0;
         }
         if (TaaD->unk18) {
@@ -312,9 +312,9 @@ RECOMP_PATCH void func_global_asm_8068AD7C(void) {
                         }
                         func_global_asm_80608DA8(0x9C, var_s0, 0x7F, 0x1E, (RANDNUM() >> 0xF) % 3);
                         if (current_map == MAP_GALLEON_PUFFTOSS) {
-                            TaaD->unk21 = 80 * frequency;
+                            TaaD->unk21 = MIN(80 * frequency, 255);
                         } else {
-                            TaaD->unk21 = 50 * frequency;
+                            TaaD->unk21 = MIN(50 * frequency, 255);
                         }
                     }
                 }
@@ -412,11 +412,11 @@ RECOMP_PATCH void func_global_asm_806443E4(Prop_ScriptData *arg0, s16 arg1, s16 
         D_global_asm_8077058C = 0;
     }
     if (RandClamp(50) == 0xF) {
-        var_v1->unk0 = 0x28 * frequency;
+        var_v1->unk0 = 0x28;
     }
     if (var_v1->unk0) {
         var_v1->unk0--;
-        if (RandClamp(10) == 5) {
+        if (RandClamp(10 * frequency) == 5) {
             if (var_f16 < 2200.0f) {
                 if (D_global_asm_80770DC9 != 0) {
                     if (D_global_asm_80770DD4 < 600.0f) {
